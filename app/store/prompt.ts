@@ -92,7 +92,7 @@ export const usePromptStore = create<PromptStore>()(
         fetch(PROMPT_URL)
           .then((res) => res.json())
           .then((res) => {
-            const builtinPrompts = [res.en, res.cn]
+            const builtinPrompts = [res.en]
               .map((promptList: PromptList) => {
                 return promptList.map(
                   ([title, content]) =>
@@ -108,7 +108,7 @@ export const usePromptStore = create<PromptStore>()(
               (pre, cur) => pre.concat(cur),
               [],
             );
-            SearchService.count.builtin = res.en.length + res.cn.length;
+            SearchService.count.builtin = res.en.length;
             SearchService.init(allPromptsForSearch);
           });
       },
