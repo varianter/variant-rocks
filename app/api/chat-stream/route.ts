@@ -1,6 +1,6 @@
 import { createParser } from "eventsource-parser";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions, getProperServerSession } from "../auth/auth-options";
+import { getProperServerSession } from "../auth/auth-options";
 import { requestOpenai } from "../common";
 
 async function createStream(req: NextRequest) {
@@ -56,14 +56,6 @@ async function createStream(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest, res: NextResponse) {
-  const session = await getProperServerSession(req, res);
-  if (!session) {
-    return NextResponse.json(
-      { message: "You must be logged in." },
-      { status: 401 },
-    );
-  }
-
   try {
     const stream = await createStream(req);
     return new Response(stream);
