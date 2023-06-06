@@ -1,11 +1,11 @@
 import { createParser } from "eventsource-parser";
-import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/auth-options";
 import { requestOpenai } from "../common";
+import { NextApiRequest } from "next";
 
-async function createStream(req: NextApiRequest) {
+async function createStream(req: NextRequest) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -57,8 +57,8 @@ async function createStream(req: NextApiRequest) {
   return stream;
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getServerSession(req, res, authOptions);
+export async function POST(req: NextRequest, res: NextResponse) {
+  const session = await getServerSession(req as any, res as any, authOptions);
   if (!session) {
     return NextResponse.json(
       { message: "You must be logged in." },

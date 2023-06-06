@@ -1,10 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/auth-options";
 import { requestOpenai } from "../common";
 
-async function makeRequest(req: NextApiRequest) {
+async function makeRequest(req: NextRequest) {
   try {
     const api = await requestOpenai(req);
     const res = new NextResponse(api.body);
@@ -25,8 +24,8 @@ async function makeRequest(req: NextApiRequest) {
   }
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getServerSession(req, res, authOptions);
+export async function POST(req: NextRequest, res: NextResponse) {
+  const session = await getServerSession(req as any, res as any, authOptions);
   if (!session) {
     return NextResponse.json(
       { message: "You must be logged in." },
@@ -37,8 +36,8 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
   return makeRequest(req);
 }
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getServerSession(req, res, authOptions);
+export async function GET(req: NextRequest, res: NextResponse) {
+  const session = await getServerSession(req as any, res as any, authOptions);
   if (!session) {
     return NextResponse.json(
       { message: "You must be logged in." },
