@@ -55,7 +55,15 @@ async function createStream(req: NextRequest) {
   return stream;
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
+  const session = await getProperServerSession(req, res);
+  if (!session) {
+    return NextResponse.json(
+      { message: "You must be logged in." },
+      { status: 401 },
+    );
+  }
+
   try {
     const stream = await createStream(req);
     return new Response(stream);
