@@ -1,8 +1,11 @@
 import { createParser } from "eventsource-parser";
-import { NextRequest } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import { authOptions } from "../auth/auth-options";
 import { requestOpenai } from "../common";
 
-async function createStream(req: NextRequest) {
+async function createStream(req: NextApiRequest) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -10,9 +13,10 @@ async function createStream(req: NextRequest) {
 
   const contentType = res.headers.get("Content-Type") ?? "";
   if (!contentType.includes("stream")) {
-    const content = await (
-      await res.text()
-    ).replace(/provided:.*. You/, "provided: ***. You");
+    const content = (await res.text()).replace(
+      /provided:.*. You/,
+      "provided: ***. You",
+    );
     console.log("[Stream] error ", content);
     return "```json\n" + content + "```";
   }
@@ -53,7 +57,15 @@ async function createStream(req: NextRequest) {
   return stream;
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { message: "You must be logged in." },
+      { status: 401 },
+    );
+  }
+
   try {
     const stream = await createStream(req);
     return new Response(stream);

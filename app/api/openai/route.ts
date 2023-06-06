@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requestOpenai } from "../common";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/auth-options";
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
 
-async function makeRequest(req: NextRequest) {
+async function makeRequest(req: NextApiRequest) {
   try {
     const api = await requestOpenai(req);
     const res = new NextResponse(api.body);
@@ -22,10 +29,26 @@ async function makeRequest(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { message: "You must be logged in." },
+      { status: 401 },
+    );
+  }
+
   return makeRequest(req);
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { message: "You must be logged in." },
+      { status: 401 },
+    );
+  }
+
   return makeRequest(req);
 }
