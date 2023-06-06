@@ -1,12 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requestOpenai } from "../common";
+import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 import { authOptions } from "../auth/auth-options";
-import {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
+import { requestOpenai } from "../common";
 
 async function makeRequest(req: NextApiRequest) {
   try {

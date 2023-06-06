@@ -2,7 +2,6 @@ import { NextAuthOptions } from "next-auth";
 import AzureADProvider from "next-auth/providers/azure-ad";
 
 export const authOptions: NextAuthOptions = {
-  debug: true,
   providers: [
     AzureADProvider({
       clientId: process.env.AZURE_AD_CLIENT_ID ?? "",

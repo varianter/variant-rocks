@@ -77,6 +77,4 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export const config = {
-  runtime: "edge",
-};
+export const runtime = "edge";
