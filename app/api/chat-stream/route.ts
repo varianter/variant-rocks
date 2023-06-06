@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/auth-options";
 import { requestOpenai } from "../common";
-import { NextApiRequest } from "next";
 
 async function createStream(req: NextRequest) {
   const encoder = new TextEncoder();
@@ -77,4 +76,4 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 }
 
-// export const runtime = "edge";
+export const runtime = "nodejs";
