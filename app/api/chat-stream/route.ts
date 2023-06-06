@@ -55,7 +55,7 @@ async function createStream(req: NextRequest) {
   return stream;
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   try {
     const stream = await createStream(req);
     return new Response(stream);
