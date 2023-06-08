@@ -1,7 +1,6 @@
 import { SubmitKey } from "../store/app";
-import type { LocaleType } from "./index";
 
-const en: LocaleType = {
+const en = {
   WIP: "WIP...",
   Error: {
     Unauthorized:
@@ -85,6 +84,7 @@ const en: LocaleType = {
       GoToUpdate: "Update",
     },
     SendKey: "Send Key",
+    PrePrompt: "Initial Context",
     Theme: "Theme",
     TightBorder: "Tight Border",
     SendPreviewBubble: "Send Preview Bubble",
@@ -126,6 +126,11 @@ const en: LocaleType = {
       SubTitle: "Access control enabled",
       Placeholder: "Need Access Code",
     },
+    Context: {
+      Title: "Context",
+      SubTitle: "Set global context",
+      Placeholder: "User context",
+    },
     Model: "Model",
     Temperature: {
       Title: "Temperature",
@@ -166,5 +171,7 @@ const en: LocaleType = {
     Add: "Add One",
   },
 };
+
+export type LocaleType = typeof en;
 
 export default en;

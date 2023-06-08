@@ -38,9 +38,10 @@ function SettingItem(props: {
   title: string;
   subTitle?: string;
   children: JSX.Element;
+  column?: boolean;
 }) {
   return (
-    <ListItem>
+    <ListItem column={props.column}>
       <div className={styles["settings-title"]}>
         <div>{props.title}</div>
         {props.subTitle && (
@@ -67,6 +68,14 @@ function PasswordInput(props: HTMLProps<HTMLInputElement>) {
         className={styles["password-eye"]}
       />
       <input {...props} type={visible ? "text" : "password"} />
+    </div>
+  );
+}
+
+function TextInput(props: HTMLProps<HTMLTextAreaElement>) {
+  return (
+    <div className={styles["text-input"]}>
+      <textarea rows={4} {...props} />
     </div>
   );
 }
@@ -230,6 +239,23 @@ export function Settings(props: { closeSettings: () => void }) {
               />
             )}
           </SettingItem> */}
+
+          <SettingItem
+            title={Locale.Settings.Context.Title}
+            subTitle={Locale.Settings.Context.SubTitle}
+            column
+          >
+            <TextInput
+              value={config.context}
+              type="text"
+              placeholder={Locale.Settings.Context.Placeholder}
+              onChange={(e) => {
+                updateConfig(
+                  (config) => (config.context = e.currentTarget.value),
+                );
+              }}
+            />
+          </SettingItem>
 
           <SettingItem title={Locale.Settings.SendKey}>
             <select

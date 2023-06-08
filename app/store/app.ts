@@ -44,6 +44,7 @@ export enum Theme {
 }
 
 export interface ChatConfig {
+  context: string;
   historyMessageCount: number; // -1 means all
   compressMessageLengthThreshold: number;
   sendBotMessages: boolean; // send bot's message or not
@@ -132,6 +133,7 @@ export const ModalConfigValidator = {
 };
 
 const DEFAULT_CONFIG: ChatConfig = {
+  context: "",
   historyMessageCount: 4,
   compressMessageLengthThreshold: 1000,
   sendBotMessages: true as boolean,
@@ -465,6 +467,15 @@ export const useChatStore = create<ChatStore>()(
         const recentMessages = context.concat(
           messages.slice(Math.max(0, n - config.historyMessageCount)),
         );
+
+        if (config.context) {
+          const contextMessage: Message = {
+            content: `${config.context}`,
+            role: "user",
+            date: "",
+          };
+          recentMessages.unshift(contextMessage);
+        }
 
         //Add system prompt
         if (process.env.NEXT_PUBLIC_SYSTEM_PROMPT != undefined) {

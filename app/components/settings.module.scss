@@ -9,7 +9,6 @@
   font-size: 14px;
   font-weight: bolder;
 }
-
 .settings-sub-title {
   font-size: 12px;
   font-weight: normal;
@@ -25,5 +24,15 @@
 
   .password-eye {
     margin-right: 4px;
+  }
+}
+
+.text-input {
+  display: flex;
+  width: 100%;
+
+  textarea {
+    width: 100%;
+    max-width: 100%;
   }
 }
