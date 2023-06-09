@@ -69,6 +69,7 @@ const en = {
         tw: "繁體中文",
         es: "Español",
         it: "Italiano",
+        se: "Svenska",
       },
     },
     Avatar: "Avatar",

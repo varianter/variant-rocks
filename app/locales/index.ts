@@ -1,9 +1,10 @@
 import EN from "./en";
 import NO from "./no";
+import SE from "./se";
 
 export type { LocaleType } from "./en";
 
-export const AllLangs = ["en", "no"] as const;
+export const AllLangs = ["en", "no", "se"] as const;
 type Lang = (typeof AllLangs)[number];
 
 const LANG_KEY = "lang";
@@ -42,6 +43,9 @@ export function getLang(): Lang {
   if (lang == "en") {
     return "en";
   }
+  if (lang == "se") {
+    return "se";
+  }
   return "no";
 }
 
@@ -50,4 +54,4 @@ export function changeLang(lang: Lang) {
   location.reload();
 }
 
-export default { en: EN, no: NO }[getLang()];
+export default { en: EN, no: NO, se: SE }[getLang()];
