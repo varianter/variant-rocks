@@ -1,6 +1,7 @@
 import { SubmitKey } from "../store/app";
+import { LocaleType } from "./en";
 
-const no = {
+const no: LocaleType = {
   WIP: "Under arbeid…",
   Error: {
     Unauthorized:
@@ -88,7 +89,7 @@ const no = {
     SendKey: "Sende-tast",
     PrePrompt: "Innledende kontekst",
     Theme: "Tema",
-    TightBorder: "Tettdekkende kantlinje",
+    TightBorder: "Full-bredde modus",
     SendPreviewBubble: "Forhåndsvisningsboble",
     Prompt: {
       Disable: {
