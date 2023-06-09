@@ -10,6 +10,7 @@ import styles from "./home.module.scss";
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
 import ChatGptIcon from "../icons/chatgpt.svg";
+import RobotIcon from "../icons/robotgpt.svg";
 
 import BotIcon from "../icons/bot.svg";
 import UserIcon from "../icons/user-svg.svg";
@@ -129,7 +130,7 @@ function _Home() {
               "Using GPT-4 in Azure OpenAI Service"}
           </div>
           <div className={styles["sidebar-logo"]}>
-            <ChatGptIcon />
+            <RobotIcon />
           </div>
         </div>
 

@@ -270,6 +270,14 @@
   box-shadow: var(--card-shadow);
   border-radius: 10px;
 }
+.user-avtar-bot {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--card-shadow);
+}
 
 .chat-message-item {
   box-sizing: border-box;
