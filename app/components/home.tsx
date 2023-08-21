@@ -4,27 +4,18 @@ require("../polyfill");
 
 import { useState, useEffect } from "react";
 
-import { IconButton } from "./button";
 import styles from "./home.module.scss";
 
-import SettingsIcon from "../icons/settings.svg";
-import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
-import RobotIcon from "../icons/robotgpt.svg";
-
 import BotIcon from "../icons/bot.svg";
-import UserIcon from "../icons/user-svg.svg";
-import AddIcon from "../icons/add.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import CloseIcon from "../icons/close.svg";
+
+import Sidebar from "./sidebar";
 
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
-import Locale from "../locales";
 import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
-import { REPO_URL } from "../constant";
 import { ErrorBoundary } from "./error";
 
 export function Loading(props: { noLogo?: boolean }) {
@@ -88,6 +79,13 @@ const useHasHydrated = () => {
 };
 
 function _Home() {
+  const loading = !useHasHydrated();
+  const [showSideBar, setShowSideBar] = useState(true);
+
+  // Setting
+  const [openSettings, setOpenSettings] = useState(false);
+  const config = useChatStore((state) => state.config);
+
   const [createNewSession, currentIndex, removeSession] = useChatStore(
     (state) => [
       state.newSession,
@@ -95,13 +93,8 @@ function _Home() {
       state.removeSession,
     ],
   );
-  const chatStore = useChatStore();
-  const loading = !useHasHydrated();
-  const [showSideBar, setShowSideBar] = useState(true);
 
-  // setting
-  const [openSettings, setOpenSettings] = useState(false);
-  const config = useChatStore((state) => state.config);
+  const chatStore = useChatStore();
 
   useSwitchTheme();
 
@@ -117,71 +110,18 @@ function _Home() {
           : styles.container
       }`}
     >
-      <div
-        className={styles.sidebar + ` ${showSideBar && styles["sidebar-show"]}`}
+      <Sidebar
+        title={process.env.NEXT_PUBLIC_TITLE ?? "Jarvis"}
+        subTitle={
+          process.env.NEXT_PUBLIC_SUB_TITLE ??
+          "Using GPT-4 in Azure OpenAI Service"
+        }
+        setOpenSettings={setOpenSettings}
+        createNewSession={createNewSession}
+        chatStore={chatStore}
       >
-        <div className={styles["sidebar-header"]}>
-          <div className={styles["sidebar-title"]}>
-            {" "}
-            {process.env.NEXT_PUBLIC_TITLE ?? "Jarvis"}
-          </div>
-          <div className={styles["sidebar-sub-title"]}>
-            {process.env.NEXT_PUBLIC_SUB_TITLE ??
-              "Using GPT-4 in Azure OpenAI Service"}
-          </div>
-          <div className={styles["sidebar-logo"]}>
-            <RobotIcon />
-          </div>
-        </div>
-
-        <div
-          className={styles["sidebar-body"]}
-          onClick={() => {
-            setOpenSettings(false);
-            setShowSideBar(false);
-          }}
-        >
-          <ChatList />
-        </div>
-
-        <div className={styles["sidebar-tail"]}>
-          <div className={styles["sidebar-actions"]}>
-            <div className={styles["sidebar-action"] + " " + styles.mobile}>
-              <IconButton
-                icon={<CloseIcon />}
-                onClick={chatStore.deleteSession}
-              />
-            </div>
-            <div className={styles["sidebar-action"]}>
-              <IconButton
-                icon={<SettingsIcon />}
-                onClick={() => {
-                  setOpenSettings(true);
-                  setShowSideBar(false);
-                }}
-                shadow
-              />
-            </div>
-            <div className={styles["sidebar-action"]}>
-              <a href={REPO_URL} target="_blank">
-                <IconButton icon={<GithubIcon />} shadow />
-              </a>
-            </div>
-          </div>
-          <div>
-            <IconButton
-              icon={<AddIcon />}
-              text={Locale.Home.NewChat}
-              onClick={() => {
-                createNewSession();
-                setShowSideBar(false);
-              }}
-              shadow
-            />
-          </div>
-        </div>
-      </div>
-
+        <ChatList />
+      </Sidebar>
       <div className={styles["window-content"]}>
         {openSettings ? (
           <Settings
