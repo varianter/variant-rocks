@@ -82,9 +82,19 @@ function _Home() {
   const loading = !useHasHydrated();
   const [showSideBar, setShowSideBar] = useState(true);
 
-  // setting
+  // Setting
   const [openSettings, setOpenSettings] = useState(false);
   const config = useChatStore((state) => state.config);
+
+  const [createNewSession, currentIndex, removeSession] = useChatStore(
+    (state) => [
+      state.newSession,
+      state.currentSessionIndex,
+      state.removeSession,
+    ],
+  );
+
+  const chatStore = useChatStore();
 
   useSwitchTheme();
 
@@ -107,6 +117,8 @@ function _Home() {
           "Using GPT-4 in Azure OpenAI Service"
         }
         setOpenSettings={setOpenSettings}
+        createNewSession={createNewSession}
+        chatStore={chatStore}
       >
         <ChatList />
       </Sidebar>

@@ -9,7 +9,6 @@ import styles from "./home.module.scss";
 
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
-import CvIcon from "../icons/cv.svg";
 import RobotIcon from "../icons/robotgpt.svg";
 
 import BotIcon from "../icons/bot.svg";
@@ -17,7 +16,7 @@ import AddIcon from "../icons/add.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import CloseIcon from "../icons/close.svg";
 
-import { useChatStore } from "../store";
+import { ChatStore, useChatStore } from "../store";
 import Locale from "../locales";
 
 import { REPO_URL } from "../constant";
@@ -78,16 +77,10 @@ export default function Sidebar(props: {
   title: string;
   subTitle: string;
   setOpenSettings?: (newState: boolean) => void;
+  createNewSession?: () => void;
+  chatStore?: ChatStore;
   children: React.ReactNode;
 }) {
-  const [createNewSession, currentIndex, removeSession] = useChatStore(
-    (state) => [
-      state.newSession,
-      state.currentSessionIndex,
-      state.removeSession,
-    ],
-  );
-  const chatStore = useChatStore();
   const loading = !useHasHydrated();
   const [showSideBar, setShowSideBar] = useState(true);
 
@@ -129,7 +122,11 @@ export default function Sidebar(props: {
           <div className={styles["sidebar-action"] + " " + styles.mobile}>
             <IconButton
               icon={<CloseIcon />}
-              onClick={chatStore.deleteSession}
+              onClick={() => {
+                if (props.chatStore) {
+                  props.chatStore.deleteSession;
+                }
+              }}
             />
           </div>
           <div className={styles["sidebar-action"]}>
@@ -155,7 +152,9 @@ export default function Sidebar(props: {
             icon={<AddIcon />}
             text={Locale.Home.NewChat}
             onClick={() => {
-              createNewSession();
+              if (typeof props.createNewSession === "function") {
+                props.createNewSession();
+              }
               setShowSideBar(false);
             }}
             shadow

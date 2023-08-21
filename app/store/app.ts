@@ -198,7 +198,7 @@ function createEmptySession(): ChatSession {
   };
 }
 
-interface ChatStore {
+export interface ChatStore {
   config: ChatConfig;
   sessions: ChatSession[];
   currentSessionIndex: number;
