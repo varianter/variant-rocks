@@ -17,6 +17,7 @@ import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
 import { ErrorBoundary } from "./error";
+import LayoutWrapper from "./layoutWrapper";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -103,13 +104,7 @@ function _Home() {
   }
 
   return (
-    <div
-      className={`${
-        config.tightBorder && !isMobileScreen()
-          ? styles["tight-container"]
-          : styles.container
-      }`}
-    >
+    <LayoutWrapper>
       <Sidebar
         title={process.env.NEXT_PUBLIC_TITLE ?? "Jarvis"}
         subTitle={
@@ -138,7 +133,7 @@ function _Home() {
           />
         )}
       </div>
-    </div>
+    </LayoutWrapper>
   );
 }
 
