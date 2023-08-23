@@ -12,11 +12,11 @@ import LoadingIcon from "../icons/three-dots.svg";
 import Sidebar from "./sidebar";
 
 import { useChatStore } from "../store";
-import { isMobileScreen } from "../utils";
 import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
 import { ErrorBoundary } from "./error";
+import LayoutWrapper from "./layoutWrapper";
 import { useSwitchTheme } from "../function/useSwitchTheme";
 
 export function Loading(props: { noLogo?: boolean }) {
@@ -52,7 +52,6 @@ function _Home() {
 
   // Setting
   const [openSettings, setOpenSettings] = useState(false);
-  const config = useChatStore((state) => state.config);
 
   const [createNewSession, currentIndex, removeSession] = useChatStore(
     (state) => [
@@ -71,13 +70,7 @@ function _Home() {
   }
 
   return (
-    <div
-      className={`${
-        config.tightBorder && !isMobileScreen()
-          ? styles["tight-container"]
-          : styles.container
-      }`}
-    >
+    <LayoutWrapper>
       <Sidebar
         title={process.env.NEXT_PUBLIC_TITLE ?? "Jarvis"}
         subTitle={
@@ -106,7 +99,7 @@ function _Home() {
           />
         )}
       </div>
-    </div>
+    </LayoutWrapper>
   );
 }
 
