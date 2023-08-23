@@ -9,6 +9,7 @@ import styles from "./home.module.scss";
 
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
+import CVIcon from "../icons/cv.svg";
 import RobotIcon from "../icons/robotgpt.svg";
 
 import BotIcon from "../icons/bot.svg";
@@ -144,6 +145,11 @@ export default function Sidebar(props: {
           <div className={styles["sidebar-action"]}>
             <a href={REPO_URL} target="_blank">
               <IconButton icon={<GithubIcon />} shadow />
+            </a>
+          </div>
+          <div className={styles["sidebar-action"]}>
+            <a href="salesGPT">
+              <IconButton icon={<CVIcon />} shadow />
             </a>
           </div>
         </div>
