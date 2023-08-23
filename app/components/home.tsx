@@ -12,7 +12,6 @@ import LoadingIcon from "../icons/three-dots.svg";
 import Sidebar from "./sidebar";
 
 import { useChatStore } from "../store";
-import { isMobileScreen } from "../utils";
 import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
@@ -53,7 +52,6 @@ function _Home() {
 
   // Setting
   const [openSettings, setOpenSettings] = useState(false);
-  const config = useChatStore((state) => state.config);
 
   const [createNewSession, currentIndex, removeSession] = useChatStore(
     (state) => [
