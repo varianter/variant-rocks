@@ -1,0 +1,15 @@
+.employee-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  align-self: center;
+  gap: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .employee-list {
+    grid-template-columns: 1fr;
+  }
+}
