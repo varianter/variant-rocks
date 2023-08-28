@@ -4,11 +4,15 @@ import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "../api/auth/auth-options";
 import { SalesGPT } from "../components/salesGPT";
+import getAllEmployees from "../function/Employees";
 
 export default async function App() {
+  const employees = await getAllEmployees();
   const session = await getServerSession(authOptions);
   if (!session) {
     return redirect("/api/auth/signin");
   }
-  return <SalesGPT />;
+  if (employees) {
+    return <SalesGPT employees={employees} />;
+  }
 }

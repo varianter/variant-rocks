@@ -1,10 +1,15 @@
 import EmployeeCard from "./employeeCard";
 import styles from "./home.module.scss";
 import employeeStyles from "./employees.module.scss";
+import { EmployeeItemProp } from "../function/Employees";
+import { useChatStore } from "../store";
+import { isMobileScreen } from "../utils";
 
-export default function Employees() {
+export default async function Employees({ employees }: EmployeeItemProp) {
+  const config = useChatStore((state) => state.config);
+
   return (
-    <div className={styles["window-content"]}>
+    <>
       <div className={styles["window-header"]}>
         <div className={styles["window-header-title"]}>
           <div className={styles["window-header-main-title"]}>Ansatte</div>
@@ -15,44 +20,25 @@ export default function Employees() {
           </div>
         </div>
       </div>
-      <ul className={employeeStyles["employee-list"]}>
-        <EmployeeCard
-          employeeName={"NAME"}
-          employeeRole={"ROLE"}
-          employeeImageSrc={""}
-          href={""}
-        />
-        <EmployeeCard
-          employeeName={"NAME"}
-          employeeRole={"ROLE"}
-          employeeImageSrc={""}
-          href={""}
-        />
-        <EmployeeCard
-          employeeName={"NAME"}
-          employeeRole={"ROLE"}
-          employeeImageSrc={""}
-          href={""}
-        />
-        <EmployeeCard
-          employeeName={"NAME"}
-          employeeRole={"ROLE"}
-          employeeImageSrc={""}
-          href={""}
-        />
-        <EmployeeCard
-          employeeName={"NAME"}
-          employeeRole={"ROLE"}
-          employeeImageSrc={""}
-          href={""}
-        />
-        <EmployeeCard
-          employeeName={"NAME"}
-          employeeRole={"ROLE"}
-          employeeImageSrc={""}
-          href={""}
-        />
+      <ul
+        className={
+          config.tightBorder && !isMobileScreen()
+            ? employeeStyles["employee-list-tight"]
+            : employeeStyles["employee-list"]
+        }
+      >
+        {employees.map((employee) => {
+          return (
+            <EmployeeCard
+              employeeName={employee.name}
+              employeeRole={"mangler felt"}
+              employeeImageSrc={employee.imageUrl}
+              href={""}
+              key={employee.email}
+            />
+          );
+        })}
       </ul>
-    </div>
+    </>
   );
 }

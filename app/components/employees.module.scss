@@ -1,11 +1,25 @@
-.employee-list {
+@mixin employee-list {
+  overflow-y: auto;
   list-style: none;
-  padding: 0;
+  padding-inline: 1.5rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
   align-items: center;
-  align-self: center;
   gap: 1.5rem;
+}
+
+.employee-list {
+  @include employee-list();
+  grid-template-columns: 1fr 1fr;
+}
+
+.employee-list-tight {
+  @include employee-list();
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+.test {
+  position: relative;
 }
 
 @media (max-width: 800px) {
