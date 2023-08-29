@@ -4,9 +4,11 @@ import employeeStyles from "./employees.module.scss";
 import { EmployeeItemProp } from "../function/Employees";
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
+import { useState } from "react";
 
 export default async function Employees({ employees }: EmployeeItemProp) {
   const config = useChatStore((state) => state.config);
+  const [selectedOffice, setSelectedOffice] = useState("");
 
   return (
     <>
@@ -14,9 +16,12 @@ export default async function Employees({ employees }: EmployeeItemProp) {
         <div className={styles["window-header-title"]}>
           <div className={styles["window-header-main-title"]}>Ansatte</div>
           <div>
-            <button>Trondheim</button>
-            <button>Oslo</button>
-            <button>Bergen</button>
+            <button onClick={() => setSelectedOffice("Trondheim")}>
+              Trondheim
+            </button>
+            <button onClick={() => setSelectedOffice("Oslo")}>Oslo</button>
+            <button onClick={() => setSelectedOffice("Bergen")}>Bergen</button>
+            <button onClick={() => setSelectedOffice("")}>Alle</button>
           </div>
         </div>
       </div>
@@ -27,17 +32,23 @@ export default async function Employees({ employees }: EmployeeItemProp) {
             : employeeStyles["employee-list"]
         }
       >
-        {employees.map((employee) => {
-          return (
-            <EmployeeCard
-              employeeName={employee.name}
-              employeeRole={"mangler felt"}
-              employeeImageSrc={employee.imageUrl}
-              href={""}
-              key={employee.email}
-            />
-          );
-        })}
+        {employees
+          .filter((employee) =>
+            selectedOffice !== ""
+              ? employee.officeName === selectedOffice
+              : true,
+          )
+          .map((employee) => {
+            return (
+              <EmployeeCard
+                employeeName={employee.name}
+                employeeRole={"mangler felt"}
+                employeeImageSrc={employee.imageUrl}
+                href={""}
+                key={employee.email}
+              />
+            );
+          })}
       </ul>
     </>
   );
