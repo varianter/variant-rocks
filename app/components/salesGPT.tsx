@@ -4,14 +4,13 @@ require("../polyfill");
 
 import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
-import SalesGPTPrompt from "../components/salesGPTPropmt";
 import { isMobileScreen } from "../utils";
 import { useChatStore } from "../store";
 import styles from "../components/home.module.scss";
 import dynamic from "next/dynamic";
 import { Loading } from "./home";
 import { ErrorBoundary } from "./error";
-import { EmployeeItem, EmployeeItemProp } from "../function/Employees";
+import { EmployeeItemProp } from "../function/Employees";
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
   loading: () => <Loading noLogo />,
@@ -32,8 +31,6 @@ const useHasHydrated = () => {
 };
 
 function _SalesGPT({ employees }: EmployeeItemProp) {
-  const [employeeSelected, setEmployeeSelected] = useState(false);
-
   const config = useChatStore((state) => state.config);
   useChatStore();
 
@@ -55,7 +52,7 @@ function _SalesGPT({ employees }: EmployeeItemProp) {
       }`}
     >
       <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
-        {employeeSelected && <SalesGPTPrompt />}
+        <></>
       </Sidebar>
       <div className={styles["window-content"]}>
         {openSettings ? (
