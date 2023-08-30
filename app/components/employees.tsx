@@ -44,7 +44,7 @@ export default async function Employees({ employees }: EmployeeItemProp) {
                 employeeName={employee.name}
                 employeeRole={"mangler felt"}
                 employeeImageSrc={employee.imageUrl}
-                href={""}
+                href={"salesGPT/" + employee.email.split("@")[0]}
                 key={employee.email}
               />
             );
