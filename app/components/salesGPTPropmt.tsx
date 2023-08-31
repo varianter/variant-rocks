@@ -6,17 +6,20 @@ export default function SalesGPTPrompt() {
   return (
     <div>
       <p>GPT parametere</p>
-      <div className={style.input}>
+      <div className={style["input"]}>
         <label>Vekting av nøkkelord:</label>
         <input type="text" />
       </div>
-      <div className={style.input}>
+      <div className={style["input"]}>
         <label>Antall avsnitt:</label>
         <input type="text" />
       </div>
       <LabelSelector title={"Velg nøkkelord for cv"} />
       <LabelSelector title={"Velg teknologi"} />
       <LabelSelector title={"Velg bransje"} />
+      <div className={style["buttonDiv"]}>
+        <button className={style["button"]}>Generer tekst</button>
+      </div>
     </div>
   );
 }
