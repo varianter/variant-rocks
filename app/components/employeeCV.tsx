@@ -35,7 +35,14 @@ type EmployeeCVProps = {
 };
 
 function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
+  const [keywordsWeight, setKeywordsWeight] = useState("");
+  const [paragrahs, setParagrahs] = useState("");
+  const [CVkeywords, setCVKeywords] = useState();
+  const [technologyKeywords, setTechnologyKeywords] = useState();
+  const [industrykeywords, setIndustryKeywords] = useState();
+
   const config = useChatStore((state) => state.config);
+
   useChatStore();
 
   // Setting
@@ -56,7 +63,13 @@ function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
       }`}
     >
       <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
-        <SalesGPTPrompt />
+        <SalesGPTPrompt
+          setKeywordsWeight={setKeywordsWeight}
+          setParagrahs={setParagrahs}
+          setCVKeywords={setCVKeywords}
+          setTechnologyKeywords={setTechnologyKeywords}
+          setIndustryKeywords={setIndustryKeywords}
+        />
       </Sidebar>
       <div className={styles["window-content"]}>
         {openSettings ? (

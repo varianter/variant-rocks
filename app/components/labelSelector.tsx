@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./labelSelector.module.scss";
 
 type Label = {
@@ -8,9 +8,10 @@ type Label = {
 
 type LabelSelectorProps = {
   title: string;
+  setter: Function;
 };
 
-export default function LabelSelector({ title }: LabelSelectorProps) {
+export default function LabelSelector({ title, setter }: LabelSelectorProps) {
   // Labels handeling
   const [labels, setLabels] = useState<Label[]>();
   const [showInput, setShowInput] = useState(false);
@@ -32,6 +33,16 @@ export default function LabelSelector({ title }: LabelSelectorProps) {
       : [{ text: labelText, active: false }];
     setLabels(updatedLabels);
   };
+
+  useEffect(() => {
+    let activeLabels: Label[] = [];
+    labels?.map((label) => {
+      if (label.active) {
+        activeLabels.push(label);
+      }
+    });
+    setter(activeLabels);
+  }, [labels]);
 
   return (
     <div>
