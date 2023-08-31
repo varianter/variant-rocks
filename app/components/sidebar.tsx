@@ -10,6 +10,7 @@ import styles from "./home.module.scss";
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
 import CVIcon from "../icons/cv.svg";
+import ChatIcon from "../icons/chat.svg";
 import RobotIcon from "../icons/robotgpt.svg";
 
 import BotIcon from "../icons/bot.svg";
@@ -21,6 +22,7 @@ import { ChatStore, useChatStore } from "../store";
 import Locale from "../locales";
 
 import { REPO_URL } from "../constant";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -82,6 +84,7 @@ export default function Sidebar(props: {
   chatStore?: ChatStore;
   children: React.ReactNode;
 }) {
+  const pathName = usePathname();
   const loading = !useHasHydrated();
   const [showSideBar, setShowSideBar] = useState(true);
 
@@ -93,6 +96,14 @@ export default function Sidebar(props: {
   if (loading) {
     return <Loading />;
   }
+
+  const isUrlSalesGPT = () => {
+    if (pathName.includes("salesGPT")) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <div
@@ -147,25 +158,35 @@ export default function Sidebar(props: {
               <IconButton icon={<GithubIcon />} shadow />
             </a>
           </div>
-          <div className={styles["sidebar-action"]}>
-            <a href="salesGPT">
-              <IconButton icon={<CVIcon />} shadow />
-            </a>
+          {isUrlSalesGPT() ? (
+            <div className={styles["sidebar-action"]}>
+              <a href="/">
+                <IconButton icon={<ChatIcon />} shadow />
+              </a>
+            </div>
+          ) : (
+            <div className={styles["sidebar-action"]}>
+              <a href="salesGPT">
+                <IconButton icon={<CVIcon />} shadow />
+              </a>
+            </div>
+          )}
+        </div>
+        {!isUrlSalesGPT() && (
+          <div>
+            <IconButton
+              icon={<AddIcon />}
+              text={Locale.Home.NewChat}
+              onClick={() => {
+                if (typeof props.createNewSession === "function") {
+                  props.createNewSession();
+                }
+                setShowSideBar(false);
+              }}
+              shadow
+            />
           </div>
-        </div>
-        <div>
-          <IconButton
-            icon={<AddIcon />}
-            text={Locale.Home.NewChat}
-            onClick={() => {
-              if (typeof props.createNewSession === "function") {
-                props.createNewSession();
-              }
-              setShowSideBar(false);
-            }}
-            shadow
-          />
-        </div>
+        )}
       </div>
     </div>
   );
