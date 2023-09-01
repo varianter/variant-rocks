@@ -80,6 +80,8 @@ function _Home() {
         setOpenSettings={setOpenSettings}
         createNewSession={createNewSession}
         chatStore={chatStore}
+        setShowSideBar={setShowSideBar}
+        showSideBar={showSideBar}
       >
         <ChatList />
       </Sidebar>
@@ -94,7 +96,7 @@ function _Home() {
         ) : (
           <Chat
             key="chat"
-            showSideBar={() => setShowSideBar(true)}
+            showSideBar={setShowSideBar}
             sideBarShowing={showSideBar}
           />
         )}

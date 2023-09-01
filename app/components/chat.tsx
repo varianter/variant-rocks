@@ -333,7 +333,7 @@ function useScrollToBottom() {
 }
 
 export function Chat(props: {
-  showSideBar?: () => void;
+  showSideBar?: (newState: boolean) => void;
   sideBarShowing?: boolean;
 }) {
   type RenderMessage = Message & { preview?: boolean };
@@ -543,7 +543,11 @@ export function Chat(props: {
               icon={<ReturnIcon />}
               bordered
               title={Locale.Chat.Actions.ChatList}
-              onClick={props?.showSideBar}
+              onClick={() => {
+                if (props.showSideBar) {
+                  props.showSideBar(true);
+                }
+              }}
             />
           </div>
           <div className={styles["window-action-button"]}>

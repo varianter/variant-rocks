@@ -82,11 +82,12 @@ export default function Sidebar(props: {
   setOpenSettings?: (newState: boolean) => void;
   createNewSession?: () => void;
   chatStore?: ChatStore;
+  showSideBar?: boolean;
+  setShowSideBar?: (newState: boolean) => void;
   children: React.ReactNode;
 }) {
   const pathName = usePathname();
   const loading = !useHasHydrated();
-  const [showSideBar, setShowSideBar] = useState(true);
 
   // setting
   const config = useChatStore((state) => state.config);
@@ -107,7 +108,9 @@ export default function Sidebar(props: {
 
   return (
     <div
-      className={styles.sidebar + ` ${showSideBar && styles["sidebar-show"]}`}
+      className={
+        styles.sidebar + ` ${props.showSideBar && styles["sidebar-show"]}`
+      }
     >
       <div className={styles["sidebar-header"]}>
         <div className={styles["sidebar-title"]}>{props.title}</div>
@@ -123,7 +126,9 @@ export default function Sidebar(props: {
           if (typeof props.setOpenSettings === "function") {
             props.setOpenSettings(false);
           }
-          setShowSideBar(false);
+          if (typeof props.setShowSideBar === "function") {
+            props.setShowSideBar(false);
+          }
         }}
       >
         {props.children}
@@ -148,7 +153,9 @@ export default function Sidebar(props: {
                 if (typeof props.setOpenSettings === "function") {
                   props.setOpenSettings(true);
                 }
-                setShowSideBar(false);
+                if (typeof props.setShowSideBar === "function") {
+                  props.setShowSideBar(false);
+                }
               }}
               shadow
             />
@@ -181,7 +188,9 @@ export default function Sidebar(props: {
                 if (typeof props.createNewSession === "function") {
                   props.createNewSession();
                 }
-                setShowSideBar(false);
+                if (typeof props.setShowSideBar === "function") {
+                  props.setShowSideBar(false);
+                }
               }}
               shadow
             />
