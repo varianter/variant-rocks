@@ -1,24 +1,79 @@
-import React from "react";
+import React, { useState } from "react";
 import style from "./salesGPTPrompt.module.scss";
 import LabelSelector from "./labelSelector";
+import { Message, createMessage, useChatStore } from "../store";
 
 type SalesGPTPromptProps = {
-  setKeywordsWeight: Function;
-  setParagrahs: Function;
-  setCVKeywords: Function;
-  setTechnologyKeywords: Function;
-  setIndustryKeywords: Function;
+  setResponse: (response: string) => void;
 };
 
-export default function SalesGPTPrompt({
-  setKeywordsWeight,
-  setParagrahs,
-  setCVKeywords,
-  setTechnologyKeywords,
-  setIndustryKeywords,
-}: SalesGPTPromptProps) {
+export default function SalesGPTPrompt({ setResponse }: SalesGPTPromptProps) {
+  const config = useChatStore((state) => state.config);
+  const chatStore = useChatStore();
+  const propmt = "This is the string to send in to the LLM";
+
+  // TODO: use these states for propmt
+  const [keywordsWeight, setKeywordsWeight] = useState("");
+  const [paragrahs, setParagrahs] = useState("");
+  const [CVkeywords, setCVKeywords] = useState();
+  const [technologyKeywords, setTechnologyKeywords] = useState();
+  const [industrykeywords, setIndustryKeywords] = useState();
+
+  // TODO: Refactor this
+  const [isLoading, setIsLoading] = useState(false);
+  const [session, sessionIndex] = useChatStore((state) => [
+    state.currentSession(),
+    state.currentSessionIndex,
+  ]);
+  type RenderMessage = Message & { preview?: boolean };
+  const context: RenderMessage[] = session.context.slice();
+  const [userInput, setUserInput] = useState("");
+  const messages = context
+    .concat(session.messages as RenderMessage[])
+    .concat(
+      isLoading
+        ? [
+            {
+              ...createMessage({
+                role: "assistant",
+                content: "……",
+              }),
+              preview: true,
+            },
+          ]
+        : [],
+    )
+    .concat(
+      userInput.length > 0 && config.sendPreviewBubble
+        ? [
+            {
+              ...createMessage({
+                role: "user",
+                content: userInput,
+              }),
+              preview: true,
+            },
+          ]
+        : [],
+    );
+  console.log(messages);
+  const lastMessage = messages.slice(-1)[0];
+
+  // -----------------------------------
+
+  const sendMessage = () => {
+    chatStore.onUserInput(propmt);
+  };
+
+  useChatStore();
   return (
-    <div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        sendMessage();
+        setResponse(lastMessage.content);
+      }}
+    >
       <p>GPT parametere</p>
       <div className={style["input"]}>
         <label>Vekting av nøkkelord:</label>
@@ -35,8 +90,10 @@ export default function SalesGPTPrompt({
       <LabelSelector setter={setTechnologyKeywords} title={"Velg teknologi"} />
       <LabelSelector setter={setIndustryKeywords} title={"Velg bransje"} />
       <div className={style["buttonDiv"]}>
-        <button className={style["button"]}>Generer tekst</button>
+        <button type="submit" className={style["button"]}>
+          Generer tekst
+        </button>
       </div>
-    </div>
+    </form>
   );
 }

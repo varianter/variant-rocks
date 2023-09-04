@@ -35,11 +35,7 @@ type EmployeeCVProps = {
 };
 
 function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
-  const [keywordsWeight, setKeywordsWeight] = useState("");
-  const [paragrahs, setParagrahs] = useState("");
-  const [CVkeywords, setCVKeywords] = useState();
-  const [technologyKeywords, setTechnologyKeywords] = useState();
-  const [industrykeywords, setIndustryKeywords] = useState();
+  const [GPTResponse, setGPTResponse] = useState("");
 
   const config = useChatStore((state) => state.config);
 
@@ -63,19 +59,13 @@ function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
       }`}
     >
       <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
-        <SalesGPTPrompt
-          setKeywordsWeight={setKeywordsWeight}
-          setParagrahs={setParagrahs}
-          setCVKeywords={setCVKeywords}
-          setTechnologyKeywords={setTechnologyKeywords}
-          setIndustryKeywords={setIndustryKeywords}
-        />
+        <SalesGPTPrompt setResponse={setGPTResponse} />
       </Sidebar>
       <div className={styles["window-content"]}>
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
         ) : (
-          <CV />
+          <CV GPTResponse={GPTResponse} />
         )}
       </div>
     </div>

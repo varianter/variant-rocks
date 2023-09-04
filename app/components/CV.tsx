@@ -1,5 +1,14 @@
 import React from "react";
 
-export default function CV() {
-  return <div>CV</div>;
+type CVProps = {
+  GPTResponse: string;
+};
+
+export default function CV({ GPTResponse }: CVProps) {
+  return (
+    <div>
+      <p>Response from LLM:</p>
+      <p>{GPTResponse}</p>
+    </div>
+  );
 }

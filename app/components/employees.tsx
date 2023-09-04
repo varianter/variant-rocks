@@ -5,8 +5,19 @@ import { EmployeeItemProp } from "../function/Employees";
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
 import { useState } from "react";
+import { IconButton } from "./button";
+import ChatIcon from "../icons/chat.svg";
+import SettingsIcon from "../icons/settings.svg";
+import Link from "next/link";
 
-export default async function Employees({ employees }: EmployeeItemProp) {
+type EmployeesProps = {
+  showSideBar?: (newState: boolean) => void;
+} & EmployeeItemProp;
+
+export default async function Employees({
+  employees,
+  showSideBar,
+}: EmployeesProps) {
   const config = useChatStore((state) => state.config);
   const [selectedOffice, setSelectedOffice] = useState("");
 
@@ -15,13 +26,23 @@ export default async function Employees({ employees }: EmployeeItemProp) {
       <div className={styles["window-header"]}>
         <div className={styles["window-header-title"]}>
           <div className={styles["window-header-main-title"]}>Ansatte</div>
-          <div>
-            <button onClick={() => setSelectedOffice("Trondheim")}>
-              Trondheim
-            </button>
-            <button onClick={() => setSelectedOffice("Oslo")}>Oslo</button>
-            <button onClick={() => setSelectedOffice("Bergen")}>Bergen</button>
-            <button onClick={() => setSelectedOffice("")}>Alle</button>
+          <div className={styles["employee-buttons"]}>
+            <div>
+              <button onClick={() => setSelectedOffice("Trondheim")}>
+                Trondheim
+              </button>
+              <button onClick={() => setSelectedOffice("Oslo")}>Oslo</button>
+              <button onClick={() => setSelectedOffice("Bergen")}>
+                Bergen
+              </button>
+              <button onClick={() => setSelectedOffice("")}>Alle</button>
+            </div>
+            <div>
+              <Link href="/">
+                <IconButton bordered icon={<ChatIcon />} shadow />
+              </Link>
+              <IconButton bordered icon={<SettingsIcon />} shadow />
+            </div>
           </div>
         </div>
       </div>

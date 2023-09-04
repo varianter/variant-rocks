@@ -1,3 +1,7 @@
+.employee-buttons {
+  display: flex;
+}
+
 @mixin employee-list {
   overflow-y: auto;
   list-style: none;
@@ -16,10 +20,6 @@
   @include employee-list();
   width: 100%;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-}
-
-.test {
-  position: relative;
 }
 
 @media (max-width: 800px) {
