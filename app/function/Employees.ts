@@ -1,5 +1,5 @@
-import { Configuration, LogLevel } from "@azure/msal-node";
-import * as msal from "@azure/msal-node";
+import React from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export type EmployeeItem = {
   email: string;
@@ -92,67 +92,28 @@ const adClientSecret = process.env.AZURE_AD_CLIENT_SECRET;
 const adTenantId = process.env.AZURE_AD_TENANT_ID;
 
 // TODO: get correct token
-export const getAccessToken = async (): Promise<string> => {
-  const msalConfig: Configuration = {
-    auth: {
-      clientId: adClientId!,
-      clientSecret: adClientSecret,
-      authority: `https://login.microsoftonline.com/${adTenantId}`,
-    },
-    system: {
-      loggerOptions: {
-        loggerCallback: (
-          level: LogLevel,
-          message: string,
-          containsPii: boolean,
-        ) => {
-          console.log(message);
-        },
-        piiLoggingEnabled: false,
-        logLevel: LogLevel.Verbose,
-      },
-    },
-  };
 
-  // const pca = new msal.PublicClientApplication(msalConfig);
-  const cca = new msal.ConfidentialClientApplication(msalConfig);
-  const tokenRequest = {
-    scopes: ["https://graph.microsoft.com/.default"],
-  };
-
-  try {
-    // const authResult = await cca.acquireTokenByClientCredential(tokenRequest);
-    const authResult = await cca.acquireTokenByClientCredential(tokenRequest);
-    if (authResult && authResult.accessToken) {
-      const token = authResult.accessToken;
-      return token;
-    } else {
-      throw new Error("Kunne ikke finne utstedt token");
-    }
-  } catch (error) {
-    console.log(error);
-    throw new Error("Kunne ikke hente tilgangstoken");
-  }
-};
-
-async function requestEmployeeCVData(employeeAlias: string) {
-  const token = await getAccessToken();
+async function requestEmployeeCVData(employeeAlias: string, token: any) {
+  employeeAlias = "hah"; //TODO feil argument fra funksjon
   const request = await fetch(
-    `${BASE_URL}/employees/cv?alias${employeeAlias}`,
+    `${BASE_URL}/employees/cv?alias=${employeeAlias}&country=no`,
     {
       headers: {
-        Authorization: token,
+        Authorization: `bearer ${token}`,
       },
     },
   );
+  console.log("her er det", request.ok);
 
   if (!request.ok) {
     return undefined;
   }
-  return (await request.json()).employeeCV as EmployeeCV;
+  const debug = await request.json();
+  console.log(debug);
+  return debug as EmployeeCV;
 }
 
-export async function getEmployeeCVData(employeeAlias: string) {
-  const employeeCVData = await requestEmployeeCVData(employeeAlias);
+export async function getEmployeeCVData(employeeAlias: string, token: any) {
+  const employeeCVData = await requestEmployeeCVData(employeeAlias, token);
   return employeeCVData;
 }

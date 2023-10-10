@@ -31,10 +31,9 @@ const useHasHydrated = () => {
 
 type EmployeeCVProps = {
   employeeCv: EmployeeCV | undefined;
-  token: string;
 };
 
-function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
+function _EmployeeCV({ employeeCv }: EmployeeCVProps) {
   const [GPTResponse, setGPTResponse] = useState("");
 
   const config = useChatStore((state) => state.config);
@@ -50,6 +49,8 @@ function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
     return <Loading />;
   }
 
+  console.log("værsågod ", employeeCv);
+
   return (
     <div
       className={`${
@@ -62,6 +63,7 @@ function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
         <SalesGPTPrompt setResponse={setGPTResponse} />
       </Sidebar>
       <div className={styles["window-content"]}>
+        <div>{employeeCv?.projectExperiences[0]?.description}</div>
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
         ) : (
@@ -72,10 +74,10 @@ function _EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
   );
 }
 
-export default function EmployeeCV({ employeeCv, token }: EmployeeCVProps) {
+export default function EmployeeCV({ employeeCv }: EmployeeCVProps) {
   return (
     <ErrorBoundary>
-      <_EmployeeCV employeeCv={employeeCv} token={token} />
+      <_EmployeeCV employeeCv={employeeCv} />
     </ErrorBoundary>
   );
 }

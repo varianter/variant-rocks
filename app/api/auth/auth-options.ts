@@ -15,17 +15,33 @@ export const authOptions: NextAuthOptions = {
   ],
 
   // TO ENV
-  secret: process.env.JWT_COOKIE_SECRET,
+  jwt: { secret: process.env.JWT_COOKIE_SECRET },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
 
   callbacks: {
     async redirect({ url, baseUrl }) {
       return baseUrl;
     },
+    async jwt({ token, account }) {
+      if (account) {
+        token.id_token = account.id_token;
+        token.access_token = account.access_token;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session) {
+        session = Object.assign({}, session, {
+          id_token: token.id_token,
+          access_token: token.access_token,
+        });
+      }
+      return session;
+    },
   },
-
-  // session: {
-  //   strategy: "jwt",
-  // },
 };
 
 export async function getProperServerSession(
