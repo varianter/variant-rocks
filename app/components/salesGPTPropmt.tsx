@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import style from "./salesGPTPrompt.module.scss";
 import LabelSelector from "./labelSelector";
 import { Message, createMessage, useChatStore } from "../store";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../api/auth/auth-options";
+import { getSpecificProjectData } from "../function/Employees";
 
 type SalesGPTPromptProps = {
   setResponse: (response: string) => void;
+  prompt: string;
 };
 
 export default function SalesGPTPrompt({ setResponse }: SalesGPTPromptProps) {
   const config = useChatStore((state) => state.config);
   const chatStore = useChatStore();
-  const propmt = "This is the string to send in to the LLM";
 
   // TODO: use these states for propmt
   const [keywordsWeight, setKeywordsWeight] = useState("");
@@ -62,7 +65,7 @@ export default function SalesGPTPrompt({ setResponse }: SalesGPTPromptProps) {
   // -----------------------------------
 
   const sendMessage = () => {
-    chatStore.onUserInput(propmt);
+    chatStore.onUserInput(prompt);
   };
 
   useChatStore();
@@ -71,7 +74,7 @@ export default function SalesGPTPrompt({ setResponse }: SalesGPTPromptProps) {
       onSubmit={(e) => {
         e.preventDefault();
         sendMessage();
-        setResponse(lastMessage.content);
+        setResponse(lastMessage?.content);
       }}
     >
       <p>GPT parametere</p>

@@ -49,8 +49,6 @@ function _EmployeeCV({ employeeCv }: EmployeeCVProps) {
     return <Loading />;
   }
 
-  console.log("værsågod ", employeeCv);
-
   return (
     <div
       className={`${

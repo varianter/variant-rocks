@@ -39,6 +39,7 @@ type ProjectExperience = {
   monthTo: string;
   yearTo: string;
   roles: Role[];
+  competencies: string[];
 };
 
 type Presentation = {
@@ -82,19 +83,7 @@ export default async function getAllEmployees() {
   return employees;
 }
 
-interface TokenResponse {
-  tokenType: string;
-  accessToken: string;
-}
-
-const adClientId = process.env.AZURE_AD_CLIENT_ID;
-const adClientSecret = process.env.AZURE_AD_CLIENT_SECRET;
-const adTenantId = process.env.AZURE_AD_TENANT_ID;
-
-// TODO: get correct token
-
-async function requestEmployeeCVData(employeeAlias: string, token: any) {
-  employeeAlias = "hah"; //TODO feil argument fra funksjon
+async function requestEmployeeCVData(employeeAlias: string, token: string) {
   const request = await fetch(
     `${BASE_URL}/employees/cv?alias=${employeeAlias}&country=no`,
     {
@@ -103,17 +92,47 @@ async function requestEmployeeCVData(employeeAlias: string, token: any) {
       },
     },
   );
-  console.log("her er det", request.ok);
 
   if (!request.ok) {
     return undefined;
   }
-  const debug = await request.json();
-  console.log(debug);
-  return debug as EmployeeCV;
+  return (await request.json()) as EmployeeCV;
 }
 
-export async function getEmployeeCVData(employeeAlias: string, token: any) {
+async function requestSpecificProjectData(
+  token: string,
+  employeeAlias: string,
+  competencies: string[],
+) {
+  const request = await fetch(
+    `${BASE_URL}/employees/cv/projectExperiences?alias=${employeeAlias}&country=no&competencies=${competencies}`,
+    {
+      headers: {
+        Authorization: `bearer ${token}`,
+      },
+    },
+  );
+
+  if (!request.ok) {
+    return undefined;
+  }
+  return (await request.json()) as ProjectExperience[];
+}
+
+export async function getSpecificProjectData(
+  token: string,
+  employeeAlias: string,
+  competencies: string[],
+) {
+  const projectData = await requestSpecificProjectData(
+    token,
+    employeeAlias,
+    competencies,
+  );
+  return projectData;
+}
+
+export async function getEmployeeCVData(employeeAlias: string, token: string) {
   const employeeCVData = await requestEmployeeCVData(employeeAlias, token);
   return employeeCVData;
 }
