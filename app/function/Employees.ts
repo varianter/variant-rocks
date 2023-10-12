@@ -1,5 +1,4 @@
-import React from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { requestOpenai } from "./CallGptWithoutReactContext";
 
 export type EmployeeItem = {
   email: string;
@@ -12,6 +11,16 @@ export type EmployeeItem = {
 
 export type EmployeeItemProp = {
   employees: EmployeeItem[];
+};
+
+type RequirementCompetency = {
+  requirement: string;
+  competencies: string[];
+};
+
+type RequirementResponse = {
+  requirement: string;
+  response: string;
 };
 
 type WorkExperience = {
@@ -99,11 +108,11 @@ async function requestEmployeeCVData(employeeAlias: string, token: string) {
   return (await request.json()) as EmployeeCV;
 }
 
-async function requestSpecificProjectData(
+async function findRelevantProjectForCompetencies(
   token: string,
   employeeAlias: string,
   competencies: string[],
-) {
+): Promise<ProjectExperience[] | undefined> {
   const request = await fetch(
     `${BASE_URL}/employees/cv/projectExperiences?alias=${employeeAlias}&country=no&competencies=${competencies}`,
     {
@@ -114,25 +123,82 @@ async function requestSpecificProjectData(
   );
 
   if (!request.ok) {
-    return undefined;
+    return Promise.resolve(undefined);
   }
   return (await request.json()) as ProjectExperience[];
-}
-
-export async function getSpecificProjectData(
-  token: string,
-  employeeAlias: string,
-  competencies: string[],
-) {
-  const projectData = await requestSpecificProjectData(
-    token,
-    employeeAlias,
-    competencies,
-  );
-  return projectData;
 }
 
 export async function getEmployeeCVData(employeeAlias: string, token: string) {
   const employeeCVData = await requestEmployeeCVData(employeeAlias, token);
   return employeeCVData;
+}
+
+function findRelevantRequirements(
+  prompt: string,
+  token: string,
+  employeeAlias: string,
+): Promise<RequirementCompetency[]> {
+  // TODO steg 1 få en liste med ordrett krav for kandidaten
+  // TODO steg 2 hent alle kompetanser til kandidaten
+  // TODO steg 3 finn relevante kompetanser for hvert krav
+  const requirements: RequirementCompetency[] = [
+    {
+      requirement: "Kandidaten må ha erfaring med .NET",
+      competencies: [".NET"],
+    },
+  ];
+  return Promise.resolve(requirements);
+}
+
+export async function generateSummaryOfQualifications(
+  prompt: string,
+  employeeAlias: string,
+  token: string,
+): Promise<string> {
+  const requirements = await findRelevantRequirements(
+    prompt,
+    token,
+    employeeAlias,
+  );
+  const requirementResponses = await Promise.all(
+    requirements.map(
+      async (requirement) =>
+        await generateRequirementResponse(requirement, token, employeeAlias),
+    ),
+  );
+  return await generateSummaryFromRequirementResponses(requirementResponses);
+}
+
+async function generateRequirementResponse(
+  requirement: RequirementCompetency,
+  token: string,
+  employeeAlias: string,
+): Promise<RequirementResponse> {
+  const relevantProjects = await findRelevantProjectForCompetencies(
+    token,
+    employeeAlias,
+    requirement.competencies,
+  );
+  if (!relevantProjects) {
+    return { requirement: requirement.requirement, response: "" };
+  }
+  const prompt: string = `bruk teksten under og svar på kravet. Bruk sitater fra teksten i begrunnelsen.
+  krav : ${requirement.requirement} tekst: ${relevantProjects
+    ?.map(projectExperienceToText)
+    .join(",")}`;
+  const response = await requestOpenai([{ role: "user", content: prompt }]);
+  return { requirement: requirement.requirement, response: response };
+}
+
+function projectExperienceToText(projectExperience: ProjectExperience): string {
+  let roleText = projectExperience.roles
+    .map((role) => role.title + ":" + role.description)
+    .join(",");
+  return projectExperience.description + "," + roleText;
+}
+
+async function generateSummaryFromRequirementResponses(
+  requirementResponses: RequirementResponse[],
+): Promise<string> {
+  return Promise.resolve(requirementResponses[0].response); //TODO Bruk GPT til å oppsummere dette
 }

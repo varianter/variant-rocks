@@ -4,14 +4,16 @@ import LabelSelector from "./labelSelector";
 import { Message, createMessage, useChatStore } from "../store";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/auth-options";
-import { getSpecificProjectData } from "../function/Employees";
 
 type SalesGPTPromptProps = {
   setResponse: (response: string) => void;
   prompt: string;
 };
 
-export default function SalesGPTPrompt({ setResponse }: SalesGPTPromptProps) {
+export default function SalesGPTPrompt({
+  setResponse,
+  prompt,
+}: SalesGPTPromptProps) {
   const config = useChatStore((state) => state.config);
   const chatStore = useChatStore();
 
@@ -59,7 +61,6 @@ export default function SalesGPTPrompt({ setResponse }: SalesGPTPromptProps) {
           ]
         : [],
     );
-  console.log(messages);
   const lastMessage = messages.slice(-1)[0];
 
   // -----------------------------------

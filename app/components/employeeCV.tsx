@@ -29,13 +29,11 @@ const useHasHydrated = () => {
   return hasHydrated;
 };
 
-type EmployeeCVProps = {
-  employeeCv: EmployeeCV | undefined;
+type SummaryOfQualificationProps = {
+  summaryOfQualifications: string;
 };
 
-function _EmployeeCV({ employeeCv }: EmployeeCVProps) {
-  const [GPTResponse, setGPTResponse] = useState("");
-
+function _EmployeeCV({ summaryOfQualifications }: SummaryOfQualificationProps) {
   const config = useChatStore((state) => state.config);
 
   useChatStore();
@@ -49,6 +47,8 @@ function _EmployeeCV({ employeeCv }: EmployeeCVProps) {
     return <Loading />;
   }
 
+  console.log(summaryOfQualifications);
+
   return (
     <div
       className={`${
@@ -57,25 +57,28 @@ function _EmployeeCV({ employeeCv }: EmployeeCVProps) {
           : styles.container
       }`}
     >
-      <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
-        <SalesGPTPrompt setResponse={setGPTResponse} />
-      </Sidebar>
+      <Sidebar
+        title="SalgGpt"
+        subTitle=""
+        setOpenSettings={setOpenSettings}
+      ></Sidebar>
       <div className={styles["window-content"]}>
-        <div>{employeeCv?.projectExperiences[0]?.description}</div>
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
         ) : (
-          <CV GPTResponse={GPTResponse} />
+          <CV GPTResponse={summaryOfQualifications} />
         )}
       </div>
     </div>
   );
 }
 
-export default function EmployeeCV({ employeeCv }: EmployeeCVProps) {
+export default function EmployeeCV({
+  summaryOfQualifications,
+}: SummaryOfQualificationProps) {
   return (
     <ErrorBoundary>
-      <_EmployeeCV employeeCv={employeeCv} />
+      <_EmployeeCV summaryOfQualifications={summaryOfQualifications} />
     </ErrorBoundary>
   );
 }
