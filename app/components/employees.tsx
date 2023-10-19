@@ -14,12 +14,15 @@ type EmployeesProps = {
   showSideBar?: (newState: boolean) => void;
 } & EmployeeItemProp;
 
-export default async function Employees({
-  employees,
-  showSideBar,
-}: EmployeesProps) {
+export default async function Employees({ employees }: EmployeesProps) {
   const config = useChatStore((state) => state.config);
   const [selectedOffice, setSelectedOffice] = useState("");
+  const offices = ["Trondheim", "Oslo", "Bergen"];
+  const officeButtons = offices.map((office) => (
+    <button key={office} onClick={() => setSelectedOffice(office)}>
+      {office}
+    </button>
+  ));
 
   return (
     <>
@@ -27,22 +30,14 @@ export default async function Employees({
         <div className={styles["window-header-title"]}>
           <div className={styles["window-header-main-title"]}>Ansatte</div>
           <div className={styles["employee-buttons"]}>
-            <div>
-              <button onClick={() => setSelectedOffice("Trondheim")}>
-                Trondheim
-              </button>
-              <button onClick={() => setSelectedOffice("Oslo")}>Oslo</button>
-              <button onClick={() => setSelectedOffice("Bergen")}>
-                Bergen
-              </button>
-              <button onClick={() => setSelectedOffice("")}>Alle</button>
-            </div>
-            <div>
-              <Link href="/">
-                <IconButton bordered icon={<ChatIcon />} shadow />
-              </Link>
-              <IconButton bordered icon={<SettingsIcon />} shadow />
-            </div>
+            {officeButtons}
+            <button onClick={() => setSelectedOffice("")}>Alle</button>
+          </div>
+          <div>
+            <Link href="/">
+              <IconButton bordered icon={<ChatIcon />} shadow />
+            </Link>
+            <IconButton bordered icon={<SettingsIcon />} shadow />
           </div>
         </div>
       </div>
