@@ -101,7 +101,9 @@ export default function EmployeeCV({
   employeeAlias,
 }: SummaryOfQualificationProps) {
   return (
-    <ErrorBoundary>
+    <ErrorBoundary
+      fallback={<p> Something went wrong with the EmployeeCV! </p>}
+    >
       <_EmployeeCV employeeAlias={employeeAlias} />
     </ErrorBoundary>
   );
