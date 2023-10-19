@@ -14,10 +14,6 @@ const Settings = dynamic(async () => (await import("./settings")).Settings, {
   loading: () => <Loading noLogo />,
 });
 
-const Employees = dynamic(async () => await import("./employees"), {
-  loading: () => <Loading noLogo />,
-});
-
 const useHasHydrated = () => {
   const [hasHydrated, setHasHydrated] = useState<boolean>(false);
 
@@ -34,8 +30,6 @@ type SummaryOfQualificationProps = {
 
 function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
   const config = useChatStore((state) => state.config);
-
-  useChatStore();
 
   // Setting
   const [openSettings, setOpenSettings] = useState(false);
@@ -58,12 +52,10 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
       body: JSON.stringify({ employeeAlias, requirements }),
     })
       .then(async (response) => {
-        console.log("her ", response.body);
         return await response.json();
       })
       .then((data) => {
         setGeneratedText(data);
-        console.log("gjort");
       })
       .catch((error) => {
         console.log("Error:", error);
