@@ -26,7 +26,6 @@ import {
 import {
   copyToClipboard,
   downloadAs,
-  getEmojiUrl,
   isMobileScreen,
   selectOrCopy,
 } from "../utils";
