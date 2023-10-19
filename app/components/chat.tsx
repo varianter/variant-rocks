@@ -327,7 +327,7 @@ function useScrollToBottom() {
 
 export function Chat(props: {
   showSideBar?: (newState: boolean) => void;
-  sideBarShowing?: boolean;
+  sideBarIsShowing?: boolean;
 }) {
   type RenderMessage = Message & { preview?: boolean };
 
@@ -504,9 +504,8 @@ export function Chat(props: {
 
   // Auto focus
   useEffect(() => {
-    if (props.sideBarShowing && isMobileScreen()) return;
+    if (props.sideBarIsShowing && isMobileScreen()) return;
     inputRef.current?.focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -678,7 +677,7 @@ export function Chat(props: {
               setAutoScroll(false);
               setTimeout(() => setPromptHints([]), 500);
             }}
-            autoFocus={!props?.sideBarShowing}
+            autoFocus={!props?.sideBarIsShowing}
           />
           <IconButton
             icon={<SendWhiteIcon />}

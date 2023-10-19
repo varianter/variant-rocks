@@ -97,7 +97,7 @@ function _Home() {
           <Chat
             key="chat"
             showSideBar={setShowSideBar}
-            sideBarShowing={showSideBar}
+            sideBarIsShowing={showSideBar}
           />
         )}
       </div>
