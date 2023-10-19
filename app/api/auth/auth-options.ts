@@ -39,7 +39,6 @@ export const authOptions: NextAuthOptions = {
           access_token: token.access_token,
         });
       }
-      console.log(session);
       return session;
     },
   },

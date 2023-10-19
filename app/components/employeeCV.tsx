@@ -8,7 +8,6 @@ import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
 import styles from "../components/home.module.scss";
 import Sidebar from "./sidebar";
-import SalesGPTPrompt from "./salesGPTPropmt";
 import CV from "./CV";
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
@@ -30,16 +29,18 @@ const useHasHydrated = () => {
 };
 
 type SummaryOfQualificationProps = {
-  summaryOfQualifications: string;
+  employeeAlias: string;
 };
 
-function _EmployeeCV({ summaryOfQualifications }: SummaryOfQualificationProps) {
+function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
   const config = useChatStore((state) => state.config);
 
   useChatStore();
 
   // Setting
   const [openSettings, setOpenSettings] = useState(false);
+  const [requirementText, setRequirementText] = useState("");
+  const [generatedText, setGeneratedText] = useState("");
 
   const loading = !useHasHydrated();
 
@@ -47,7 +48,27 @@ function _EmployeeCV({ summaryOfQualifications }: SummaryOfQualificationProps) {
     return <Loading />;
   }
 
-  console.log(summaryOfQualifications);
+  async function handleButtonClick(requirementText: string): Promise<void> {
+    const requirements = requirementText.split("\n");
+    await fetch("/api/chewbacca/generateSummaryOfQualifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ employeeAlias, requirements }),
+    })
+      .then(async (response) => {
+        console.log("her ", response.body);
+        return await response.json();
+      })
+      .then((data) => {
+        setGeneratedText(data);
+        console.log("gjort");
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+      });
+  }
 
   return (
     <div
@@ -66,7 +87,20 @@ function _EmployeeCV({ summaryOfQualifications }: SummaryOfQualificationProps) {
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
         ) : (
-          <CV GPTResponse={summaryOfQualifications} />
+          <>
+            <textarea
+              placeholder={
+                "Kandidaten må ha erfaring med X\nKandidaten må også ha kjennskap til Y\nErfaring med Z er et pluss"
+              }
+              value={requirementText}
+              onChange={(event) => setRequirementText(event.target.value)}
+            ></textarea>
+            <CV GPTResponse={employeeAlias} />
+            <button onClick={async () => handleButtonClick(requirementText)}>
+              Generer oppsummering av kvalifikasjoner
+            </button>
+            <CV GPTResponse={generatedText}></CV>
+          </>
         )}
       </div>
     </div>
@@ -74,11 +108,11 @@ function _EmployeeCV({ summaryOfQualifications }: SummaryOfQualificationProps) {
 }
 
 export default function EmployeeCV({
-  summaryOfQualifications,
+  employeeAlias,
 }: SummaryOfQualificationProps) {
   return (
     <ErrorBoundary>
-      <_EmployeeCV summaryOfQualifications={summaryOfQualifications} />
+      <_EmployeeCV employeeAlias={employeeAlias} />
     </ErrorBoundary>
   );
 }

@@ -1,14 +1,11 @@
-import {
-  ChatCompletionRequestMessage,
-  ChatCompletionResponseMessage,
-} from "openai";
+import { ChatCompletionRequestMessage } from "openai";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 export async function requestOpenai(input: ChatCompletionRequestMessage[]) {
   const apiUrl =
     "https://variant-rocks.openai.azure.com/openai/deployments/variant-rocks/chat/completions?api-version=2023-07-01-preview";
-  const apiKey = OPENAI_API_KEY; // Replace with your actual API key
+  const apiKey = OPENAI_API_KEY;
 
   const requestData = {
     messages: input,
