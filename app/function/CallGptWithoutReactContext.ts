@@ -5,7 +5,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 export async function requestOpenai(input: ChatCompletionRequestMessage[]) {
   const apiUrl =
     "https://variant-rocks.openai.azure.com/openai/deployments/variant-rocks/chat/completions?api-version=2023-07-01-preview";
-  const apiKey = OPENAI_API_KEY;
+  const apiKey: string | undefined = OPENAI_API_KEY;
 
   const requestData = {
     messages: input,
@@ -19,10 +19,7 @@ export async function requestOpenai(input: ChatCompletionRequestMessage[]) {
 
   const response = await fetch(apiUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "api-key": apiKey,
-    },
+    headers: { "content-type": "application/json", "api-key": apiKey ?? "" },
     body: JSON.stringify(requestData),
   });
 

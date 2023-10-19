@@ -78,11 +78,9 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
           : styles.container
       }`}
     >
-      <Sidebar
-        title="SalgGpt"
-        subTitle=""
-        setOpenSettings={setOpenSettings}
-      ></Sidebar>
+      <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
+        <div></div>
+      </Sidebar>
       <div className={styles["window-content"]}>
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
