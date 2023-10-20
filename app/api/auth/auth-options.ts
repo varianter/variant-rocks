@@ -6,42 +6,26 @@ import { NextRequest, NextResponse } from "next/server";
 export const authOptions: NextAuthOptions = {
   providers: [
     AzureADProvider({
-      clientId: process.env.AZURE_AD_CLIENT_ID!!,
-      clientSecret: process.env.AZURE_AD_CLIENT_SECRET!!,
-      tenantId: process.env.AZURE_AD_TENANT_ID,
-      authorization: { params: { scope: "openid api://chewbacca/.default" } },
+      clientId: process.env.AZURE_AD_CLIENT_ID ?? "",
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET ?? "",
+      tenantId: process.env.AZURE_AD_TENANT_ID ?? "",
+
       idToken: true,
     }),
   ],
 
   // TO ENV
-  jwt: { secret: process.env.JWT_COOKIE_SECRET },
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 60,
-  },
+  secret: process.env.JWT_COOKIE_SECRET,
 
   callbacks: {
-    async redirect({ baseUrl }) {
+    async redirect({ url, baseUrl }) {
       return baseUrl;
     },
-    async jwt({ token, account }) {
-      if (account) {
-        token.id_token = account.id_token;
-        token.access_token = account.access_token;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session) {
-        session = Object.assign({}, session, {
-          id_token: token.id_token,
-          access_token: token.access_token,
-        });
-      }
-      return session;
-    },
   },
+
+  // session: {
+  //   strategy: "jwt",
+  // },
 };
 
 export async function getProperServerSession(

@@ -26,6 +26,7 @@ import {
 import {
   copyToClipboard,
   downloadAs,
+  getEmojiUrl,
   isMobileScreen,
   selectOrCopy,
 } from "../utils";
@@ -49,7 +50,13 @@ const Markdown = dynamic(
   },
 );
 
+const Emoji = dynamic(async () => (await import("emoji-picker-react")).Emoji, {
+  loading: () => <LoadingIcon />,
+});
+
 export function Avatar(props: { role: Message["role"] }) {
+  const config = useChatStore((state) => state.config);
+
   if (props.role !== "user") {
     return <BotIcon className={styles["user-avtar-bot"]} />;
   }
@@ -326,8 +333,8 @@ function useScrollToBottom() {
 }
 
 export function Chat(props: {
-  showSideBar?: (newState: boolean) => void;
-  sideBarIsShowing?: boolean;
+  showSideBar?: () => void;
+  sideBarShowing?: boolean;
 }) {
   type RenderMessage = Message & { preview?: boolean };
 
@@ -504,8 +511,9 @@ export function Chat(props: {
 
   // Auto focus
   useEffect(() => {
-    if (props.sideBarIsShowing && isMobileScreen()) return;
+    if (props.sideBarShowing && isMobileScreen()) return;
     inputRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -535,11 +543,7 @@ export function Chat(props: {
               icon={<ReturnIcon />}
               bordered
               title={Locale.Chat.Actions.ChatList}
-              onClick={() => {
-                if (props.showSideBar) {
-                  props.showSideBar(true);
-                }
-              }}
+              onClick={props?.showSideBar}
             />
           </div>
           <div className={styles["window-action-button"]}>
@@ -677,7 +681,7 @@ export function Chat(props: {
               setAutoScroll(false);
               setTimeout(() => setPromptHints([]), 500);
             }}
-            autoFocus={!props?.sideBarIsShowing}
+            autoFocus={!props?.sideBarShowing}
           />
           <IconButton
             icon={<SendWhiteIcon />}

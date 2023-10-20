@@ -11,7 +11,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@azure/msal-node": "^2.0.2",
     "@hello-pangea/dnd": "^16.2.0",
     "@svgr/webpack": "^8.0.1",
     "@vercel/analytics": "^1.0.1",

@@ -9,8 +9,6 @@ import styles from "./home.module.scss";
 
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
-import CVIcon from "../icons/cv.svg";
-import ChatIcon from "../icons/chat.svg";
 import RobotIcon from "../icons/robotgpt.svg";
 
 import BotIcon from "../icons/bot.svg";
@@ -22,7 +20,6 @@ import { ChatStore, useChatStore } from "../store";
 import Locale from "../locales";
 
 import { REPO_URL } from "../constant";
-import { usePathname, useSearchParams } from "next/navigation";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -82,12 +79,10 @@ export default function Sidebar(props: {
   setOpenSettings?: (newState: boolean) => void;
   createNewSession?: () => void;
   chatStore?: ChatStore;
-  showSideBar?: boolean;
-  setShowSideBar?: (newState: boolean) => void;
   children: React.ReactNode;
 }) {
-  const pathName = usePathname();
   const loading = !useHasHydrated();
+  const [showSideBar, setShowSideBar] = useState(true);
 
   // setting
   const config = useChatStore((state) => state.config);
@@ -98,19 +93,9 @@ export default function Sidebar(props: {
     return <Loading />;
   }
 
-  const isUrlSalesGPT = () => {
-    if (pathName.includes("salesGPT")) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   return (
     <div
-      className={
-        styles.sidebar + ` ${props.showSideBar && styles["sidebar-show"]}`
-      }
+      className={styles.sidebar + ` ${showSideBar && styles["sidebar-show"]}`}
     >
       <div className={styles["sidebar-header"]}>
         <div className={styles["sidebar-title"]}>{props.title}</div>
@@ -126,9 +111,7 @@ export default function Sidebar(props: {
           if (typeof props.setOpenSettings === "function") {
             props.setOpenSettings(false);
           }
-          if (typeof props.setShowSideBar === "function") {
-            props.setShowSideBar(false);
-          }
+          setShowSideBar(false);
         }}
       >
         {props.children}
@@ -153,9 +136,7 @@ export default function Sidebar(props: {
                 if (typeof props.setOpenSettings === "function") {
                   props.setOpenSettings(true);
                 }
-                if (typeof props.setShowSideBar === "function") {
-                  props.setShowSideBar(false);
-                }
+                setShowSideBar(false);
               }}
               shadow
             />
@@ -165,37 +146,20 @@ export default function Sidebar(props: {
               <IconButton icon={<GithubIcon />} shadow />
             </a>
           </div>
-          {isUrlSalesGPT() ? (
-            <div className={styles["sidebar-action"]}>
-              <a href="/">
-                <IconButton icon={<ChatIcon />} shadow />
-              </a>
-            </div>
-          ) : (
-            <div className={styles["sidebar-action"]}>
-              <a href="salesGPT">
-                <IconButton icon={<CVIcon />} shadow />
-              </a>
-            </div>
-          )}
         </div>
-        {!isUrlSalesGPT() && (
-          <div>
-            <IconButton
-              icon={<AddIcon />}
-              text={Locale.Home.NewChat}
-              onClick={() => {
-                if (typeof props.createNewSession === "function") {
-                  props.createNewSession();
-                }
-                if (typeof props.setShowSideBar === "function") {
-                  props.setShowSideBar(false);
-                }
-              }}
-              shadow
-            />
-          </div>
-        )}
+        <div>
+          <IconButton
+            icon={<AddIcon />}
+            text={Locale.Home.NewChat}
+            onClick={() => {
+              if (typeof props.createNewSession === "function") {
+                props.createNewSession();
+              }
+              setShowSideBar(false);
+            }}
+            shadow
+          />
+        </div>
       </div>
     </div>
   );
