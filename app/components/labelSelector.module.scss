@@ -1,0 +1,29 @@
+@mixin label-style {
+  display: flex;
+  padding: 0.45638rem 1.31213rem 0.68456rem 1.31213rem;
+  width: fit-content;
+  justify-content: center;
+  align-items: center;
+}
+
+.label-active {
+  @include label-style;
+
+  border-radius: 2.73831rem;
+  border: 0.913px solid var(--black);
+  background: var(--primary);
+  color: #fff;
+}
+
+.label {
+  @include label-style;
+
+  border-radius: 2.35969rem;
+  border: 0.787px solid var(--black);
+}
+
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
