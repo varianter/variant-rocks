@@ -42,7 +42,7 @@ export default function LabelSelector({ title, setter }: LabelSelectorProps) {
       }
     });
     setter(activeLabels);
-  }, [labels]);
+  }, [labels, setter]);
 
   return (
     <div>
