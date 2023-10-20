@@ -1,10 +1,10 @@
 import { ChatCompletionRequestMessage } from "openai";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const AZURE_OPENAI_API_BASE = process.env.AZURE_OPENAI_API_BASE;
 
 export async function requestOpenai(input: ChatCompletionRequestMessage[]) {
-  const apiUrl =
-    "https://variant-rocks.openai.azure.com/openai/deployments/variant-rocks/chat/completions?api-version=2023-07-01-preview";
+  const apiUrl = `${AZURE_OPENAI_API_BASE}/openai/deployments/variant-rocks/chat/completions?api-version=2023-07-01-preview`;
   const apiKey: string | undefined = OPENAI_API_KEY;
 
   const requestData = {
