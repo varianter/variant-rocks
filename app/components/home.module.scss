@@ -51,6 +51,8 @@
 }
 
 .window-content {
+  position: relative;
+
   width: var(--window-content-width);
   height: 100%;
   display: flex;
