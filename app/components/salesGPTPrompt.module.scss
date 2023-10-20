@@ -1,0 +1,22 @@
+.input {
+  display: flex;
+  justify-content: space-between;
+  margin-block: 1rem;
+}
+
+.buttonDiv {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: end;
+}
+
+.button {
+  display: inline-flex;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  border: none;
+  color: #fff;
+
+  border-radius: 4.375rem;
+  background: var(--primary-default, #e61a6b);
+}
