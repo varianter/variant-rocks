@@ -112,11 +112,12 @@ async function generateRequirementResponse(
   if (!relevantProjects || relevantProjects.length < 1) {
     return { requirement: requirement.requirement, response: "" };
   }
-  const prompt: string = `bruk teksten under og svar på kravet. Prosjekt er separert med semikolon
-  få med prosjekt- og kundenavn når du referer til prosjekt. Bruk sitater fra teksten i begrunnelsen.
-    krav : ${requirement.requirement} tekst: ${relevantProjects
+  const prompt: string = `bruk tabellen under og svar på kravet. Prosjekt med prosjektnavn og kundenavn når du referer til prosjekt. Bruk sitater som er relevant for kravet i teksten.
+    krav : ${
+      requirement.requirement
+    } tabell med utvalgte prosjekt: prosjektnavn,kundenavn,beskrivelse,rolle\n   ${relevantProjects
     ?.map(projectExperienceToText)
-    .join(";")}`;
+    .join("\n")}`;
   const response = await requestOpenai([{ role: "user", content: prompt }]);
   return { requirement: requirement.requirement, response: response };
 }
@@ -129,13 +130,13 @@ async function generateKeywordsFromRequirements(
     {
       role: "user",
       content:
-        'Jeg har noen nøkkelord som systemet mitt støtter. Disse er JIRA,KUBERNETES,AZURE,GCP,AWS,JAVA,C# svar hvilken nøkkelord som er relevant for kravet : "Kandidaten må være god på utvikling av skytjenester ". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord',
+        'Jeg har noen nøkkelord som systemet mitt støtter. Disse er JIRA,KUBERNETES,AZURE,GCP,AWS,JAVA,C# svar hvilke nøkkelord som er relevant for kravet : "Kandidaten må være god på utvikling av skytjenester ". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord',
     },
     { role: "assistant", content: "KUBERNETES,GCP,AZURE,AWS" },
   ];
   const prompt: ChatCompletionRequestMessage = {
     role: "user",
-    content: ` Glem tidligere nøkkelord. Jeg har noen nye nøkkelord som systemet mitt støtter. Disse er ${competencies} svar hvilken nøkkelord som er relevant for kravet : "${requirementText}". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord`,
+    content: ` Glem tidligere nøkkelord. Jeg har noen nye nøkkelord som systemet mitt støtter. Disse er ${competencies} svar hvilke nøkkelord som er relevant for kravet : "${requirementText}". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord`,
   };
   const response = await requestOpenai([...example, prompt]);
   return { requirement: requirementText, competencies: response.split(",") };
@@ -194,7 +195,7 @@ function projectExperienceToText(projectExperience: ProjectExperience): string {
   let roleText = projectExperience.roles
     .map((role) => role.title + ":" + role.description)
     .join(",");
-  return `${projectExperience.title} kunde: ${projectExperience.customer}.${projectExperience.description}, + ${roleText}`;
+  return `${projectExperience.title},${projectExperience.customer},${projectExperience.description},${roleText}`;
 }
 
 function requirementResponsesToTable(
