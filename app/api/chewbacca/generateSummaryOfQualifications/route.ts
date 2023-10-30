@@ -3,6 +3,7 @@ import { authOptions } from "../../auth/auth-options";
 import { CustomSession } from "../../auth/[...nextauth]/typing";
 import { requestOpenai } from "@/app/function/CallGptWithoutReactContext";
 import { NextRequest, NextResponse } from "next/server";
+import { ChatCompletionRequestMessage } from "openai";
 
 type RequirementResponse = {
   requirement: string;
@@ -24,6 +25,7 @@ type ProjectExperience = {
   yearTo: string;
   roles: Role[];
   competencies: string[];
+  customer: string;
 };
 
 type Role = {
@@ -110,11 +112,12 @@ async function generateRequirementResponse(
   if (!relevantProjects || relevantProjects.length < 1) {
     return { requirement: requirement.requirement, response: "" };
   }
-  const prompt: string = `bruk teksten under og svar på kravet. Bruk sitater fra teksten i begrunnelsen.
-    krav : ${requirement.requirement} tekst: ${relevantProjects
+  const prompt: string = `bruk tabellen under og svar på kravet. Prosjekt med prosjektnavn og kundenavn når du referer til prosjekt. Bruk sitater som er relevant for kravet i teksten.
+    krav : ${
+      requirement.requirement
+    } tabell med utvalgte prosjekt: prosjektnavn,kundenavn,beskrivelse,rolle\n   ${relevantProjects
     ?.map(projectExperienceToText)
-    .join(",")}`;
-  console.log("her er det noe ", relevantProjects);
+    .join("\n")}`;
   const response = await requestOpenai([{ role: "user", content: prompt }]);
   return { requirement: requirement.requirement, response: response };
 }
@@ -123,15 +126,26 @@ async function generateKeywordsFromRequirements(
   requirementText: string,
   competencies: string[],
 ): Promise<RequirementCompetency> {
-  const prompt = `Jeg har noen nøkkelord som systemet mitt støtter. Disse er ${competencies} svar hvilken nøkkelord som er relevant for kravet : "${requirementText}". Svaret skal kun inneholde ordene komma-separert`;
-  const response = await requestOpenai([{ role: "user", content: prompt }]);
+  const example: ChatCompletionRequestMessage[] = [
+    {
+      role: "user",
+      content:
+        'Jeg har noen nøkkelord som systemet mitt støtter. Disse er JIRA,KUBERNETES,AZURE,GCP,AWS,JAVA,C# svar hvilke nøkkelord som er relevant for kravet : "Kandidaten må være god på utvikling av skytjenester ". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord',
+    },
+    { role: "assistant", content: "KUBERNETES,GCP,AZURE,AWS" },
+  ];
+  const prompt: ChatCompletionRequestMessage = {
+    role: "user",
+    content: ` Glem tidligere nøkkelord. Jeg har noen nye nøkkelord som systemet mitt støtter. Disse er ${competencies} svar hvilke nøkkelord som er relevant for kravet : "${requirementText}". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord`,
+  };
+  const response = await requestOpenai([...example, prompt]);
   return { requirement: requirementText, competencies: response.split(",") };
 }
 
 async function generateSummaryFromRequirementResponses(
   requirementResponses: RequirementResponse[],
 ): Promise<string> {
-  const prompt: string = `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens erfaring som svarer på kravene. Sammendraget bør være langt. Husk å referer til prosjektene i sammendraget ${requirementResponsesToTable(
+  const prompt: string = `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens erfaring som svarer på kravene. Sammendraget bør være langt. Husk å referer til prosjektene og kunde i sammendraget ${requirementResponsesToTable(
     requirementResponses,
   )}`;
   return await requestOpenai([{ role: "user", content: prompt }]);
@@ -181,7 +195,7 @@ function projectExperienceToText(projectExperience: ProjectExperience): string {
   let roleText = projectExperience.roles
     .map((role) => role.title + ":" + role.description)
     .join(",");
-  return projectExperience.description + "," + roleText;
+  return `${projectExperience.title},${projectExperience.customer},${projectExperience.description},${roleText}`;
 }
 
 function requirementResponsesToTable(
