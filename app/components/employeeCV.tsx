@@ -36,13 +36,14 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
   const [requirementText, setRequirementText] = useState("");
   const [generatedText, setGeneratedText] = useState("");
 
-  const loading = !useHasHydrated();
+  const [isLoading, setIsLoading] = useState(false);
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 
   async function handleButtonClick(requirementText: string): Promise<void> {
+    setIsLoading(true);
     const requirements = requirementText.split("\n");
     await fetch("/api/chewbacca/generateSummaryOfQualifications", {
       method: "POST",
@@ -56,6 +57,7 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
       })
       .then((data) => {
         setGeneratedText(data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log("Error:", error);
