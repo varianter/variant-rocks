@@ -69,12 +69,15 @@ async function generateSummaryOfQualifications(
     return undefined;
   }
   console.log(requirements);
-  const requirementResponses = await Promise.all(
-    requirements.map(
+
+  const requirementResponsesPromises = requirements
+    .filter((req) => req.competencies.length > 0)
+    .map(
       async (requirement) =>
         await generateRequirementResponse(requirement, token, employeeAlias),
-    ),
-  );
+    );
+  const requirementResponses = await Promise.all(requirementResponsesPromises);
+
   console.log(requirementResponses);
   return await generateSummaryFromRequirementResponses(requirementResponses);
 }
@@ -130,25 +133,43 @@ async function generateKeywordsFromRequirements(
     {
       role: "user",
       content:
-        'Jeg har noen nøkkelord som systemet mitt støtter. Disse er JIRA,KUBERNETES,AZURE,GCP,AWS,JAVA,C# svar hvilke nøkkelord som er relevant for kravet : "Kandidaten må være god på utvikling av skytjenester ". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord',
+        'Jeg har en nøkkelordliste : [JIRA,KUBERNETES,AZURE,GCP,AWS,JAVA,C#] svar hvilke nøkkelord som er relevant for kravet : "Kandidaten må være god på utvikling av skytjenester ". Svaret skal være en JSON liste som er et utvalg fra den nye nøkkelordlisten. Bare nøkkelord fra nøkkelordlisten kan bli med i svaret.',
     },
-    { role: "assistant", content: "KUBERNETES,GCP,AZURE,AWS" },
+    { role: "assistant", content: '["KUBERNETES","GCP","AZURE","AWS"]' },
+    {
+      role: "user",
+      content:
+        'Glem tidligere nøkkelordliste. Her er den nye nøkkelordlisten [BÆREKRAFTIG DESIGN, BRUKERTESTING, INNSIKTSARBEID] svar hvilke nøkkelord som er relevant for kravet : "kandidaten må ha lang erfaring med Java". Svaret skal være en JSON liste som er et utvalg fra den nye nøkkelordlisten. Bare nøkkelord fra nøkkelordlisten kan bli med i svaret. ',
+    },
+    {
+      role: "assistant",
+      content: "[]",
+    },
   ];
   const prompt: ChatCompletionRequestMessage = {
     role: "user",
-    content: ` Glem tidligere nøkkelord. Jeg har noen nye nøkkelord som systemet mitt støtter. Disse er ${competencies} svar hvilke nøkkelord som er relevant for kravet : "${requirementText}". Svaret skal ikke inneholde noe annet enn kommaseparert liste med nøkkelord`,
+    content: ` Glem tidligere nøkkelord. Jeg har en ny nøkkelordliste: [${competencies}] svar hvilke nøkkelord som er relevant for kravet : "${requirementText}". Svaret skal være en JSON liste som er et utvalg fra den nye nøkkelordlisten. Bare nøkkelord fra nøkkelordlisten kan bli med i svaret.`,
   };
   const response = await requestOpenai([...example, prompt]);
-  return { requirement: requirementText, competencies: response.split(",") };
+  console.log(response);
+  return {
+    requirement: requirementText,
+    competencies: JSON.parse(response) ?? [],
+  };
 }
 
 async function generateSummaryFromRequirementResponses(
   requirementResponses: RequirementResponse[],
 ): Promise<string> {
-  const prompt: string = `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens erfaring som svarer på kravene. Sammendraget bør være langt. Husk å referer til prosjektene og kunde i sammendraget ${requirementResponsesToTable(
+  const prompt: string = `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens erfaring som svarer på kravene. Sammendraget bør være langt. Husk å referer til prosjektene og kunde i sammendraget. Husk å inkludere alle rader ifra tabellen i svaret.
+  Det kan hende at samme prosjekt er brukt i de ulike begrunnelsene. Ikke bruk noe som ikke er med i tabellen. ${requirementResponsesToTable(
     requirementResponses,
   )}`;
-  return await requestOpenai([{ role: "user", content: prompt }]);
+  const summary = await requestOpenai([{ role: "user", content: prompt }]);
+  return (
+    summary ??
+    "Feil: krav-begrunnelse tabllen ble for lang og GPT gikk over token limit"
+  );
 }
 
 async function requestEmployeeCompetencies(

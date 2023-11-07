@@ -24,5 +24,8 @@ export async function requestOpenai(input: ChatCompletionRequestMessage[]) {
   });
 
   const data = await response.json();
+  if (!data?.choices) {
+    return undefined;
+  }
   return data.choices[0].message.content;
 }
