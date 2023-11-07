@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { NextAuthOptions, getServerSession } from "next-auth";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { NextRequest, NextResponse } from "next/server";
+import { CustomToken } from "./[...nextauth]/typing";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,7 +10,9 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.AZURE_AD_CLIENT_ID!!,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET!!,
       tenantId: process.env.AZURE_AD_TENANT_ID,
-      authorization: { params: { scope: "openid api://chewbacca/.default" } },
+      authorization: {
+        params: { scope: "openid api://chewbacca/.default offline_access" },
+      },
       idToken: true,
     }),
   ],
@@ -18,7 +21,6 @@ export const authOptions: NextAuthOptions = {
   jwt: { secret: process.env.JWT_COOKIE_SECRET },
   session: {
     strategy: "jwt",
-    maxAge: 30 * 60,
   },
 
   callbacks: {
@@ -26,12 +28,17 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
     async jwt({ token, account }) {
+      const customToken = token as CustomToken;
       if (account) {
-        token.id_token = account.id_token;
-        token.access_token = account.access_token;
+        customToken.access_token = account.access_token;
+        customToken.refresh_token = account.refresh_token;
+        customToken.expiry = account.expires_at ?? Date.now() + 30 * 60 * 1000;
+      } else if (customToken.expiry && Date.now() > customToken.expiry) {
+        refreshAccessToken(customToken);
       }
-      return token;
+      return customToken;
     },
+
     async session({ session, token }) {
       if (session) {
         session = Object.assign({}, session, {
@@ -57,4 +64,48 @@ export async function getProperServerSession(
     } as unknown as NextApiResponse,
     authOptions,
   );
+}
+
+async function refreshAccessToken(token: CustomToken) {
+  const refreshToken = token.refresh_token;
+
+  if (!refreshToken) {
+    // If there is no refresh token, you can't refresh the access token.
+    return;
+  }
+
+  // Make a request to your Azure AD token endpoint to refresh the access token
+  const tokenEndpoint = `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/oauth2/token`;
+
+  const requestBody = new URLSearchParams();
+  requestBody.append("grant_type", "refresh_token");
+  requestBody.append("refresh_token", refreshToken);
+  requestBody.append("client_id", process.env.AZURE_AD_CLIENT_ID ?? "");
+  requestBody.append("client_secret", process.env.AZURE_AD_CLIENT_SECRET ?? "");
+  requestBody.append("scope", "openid api://chewbacca/.default");
+
+  try {
+    const response = await fetch(tokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: requestBody.toString(),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // Update the token with the new access token and possibly a new refresh token
+      token.access_token = data.access_token;
+      token.expiry = data.expires_at ?? Date.now() + 30 * 60 * 1000; //expires after 30 minutes
+      if (data.refresh_token) {
+        token.refresh_token = data.refresh_token;
+      }
+    } else {
+      console.error("Failed to refresh access token:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+  }
 }
