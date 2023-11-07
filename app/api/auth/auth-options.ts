@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         customToken.access_token = account.access_token;
         customToken.refresh_token = account.refresh_token;
-        customToken.expiry = Date.now() + 30 * 60 * 1000; // expires after 30 minutes
+        customToken.expiry = account.expires_at ?? Date.now() + 30 * 60 * 1000;
       } else if (customToken.expiry && Date.now() > customToken.expiry) {
         refreshAccessToken(customToken);
       }
@@ -98,7 +98,7 @@ async function refreshAccessToken(token: CustomToken) {
 
       // Update the token with the new access token and possibly a new refresh token
       token.access_token = data.access_token;
-      token.expiry = Date.now() + 30 * 60 * 1000; //expires after 30 minutes
+      token.expiry = data.expires_at ?? Date.now() + 30 * 60 * 1000; //expires after 30 minutes
       if (data.refresh_token) {
         token.refresh_token = data.refresh_token;
       }
