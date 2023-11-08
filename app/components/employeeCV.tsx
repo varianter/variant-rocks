@@ -7,6 +7,7 @@ import { Loading } from "./home";
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
 import styles from "../components/home.module.scss";
+import specificStyles from "../components/employeeCv.module.scss";
 import Sidebar from "./sidebar";
 import CV from "./CV";
 
@@ -44,7 +45,7 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
 
   async function handleButtonClick(requirementText: string): Promise<void> {
     setIsLoading(true);
-    const requirements = requirementText.split("\n");
+    const requirements = requirementText.split("\n").filter((s) => s.length);
     await fetch("/api/chewbacca/generateSummaryOfQualifications", {
       method: "POST",
       headers: {
@@ -61,6 +62,7 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
       })
       .catch((error) => {
         console.log("Error:", error);
+        setIsLoading(false);
       });
   }
 
@@ -75,12 +77,13 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
       <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
         <div></div>
       </Sidebar>
-      <div className={styles["window-content"]}>
+      <div style={{ overflow: "auto" }} className={styles["window-content"]}>
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
         ) : (
           <>
             <textarea
+              className={specificStyles.RequirementInput}
               placeholder={
                 "Kandidaten må ha erfaring med X\nKandidaten må også ha kjennskap til Y\nErfaring med Z er et pluss"
               }
