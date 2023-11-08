@@ -15,4 +15,8 @@ if (process.env.DOCKER) {
   nextConfig.output = "standalone";
 }
 
+if (process.env.NODE_ENV === 'development' && process.env.IGNORE_TLS) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 module.exports = nextConfig;
