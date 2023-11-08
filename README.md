@@ -39,3 +39,10 @@ This repo is forked from https://github.com/linjungz/azure-chatgpt-ui which
 again is forked from https://github.com/Yidadaa/ChatGPT-Next-Web.
 
 Licensed as Anti-996, which is based on MIT.
+
+## Local integration to Chewbacca
+To run local integration with Chewbacca edit your .env.local file. 
+```
+CHEWBACCA_BASE_URL=https://localhost:7200
+IGNORE_TLS="any string"
+```

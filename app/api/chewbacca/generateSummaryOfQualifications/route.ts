@@ -4,6 +4,7 @@ import { CustomSession } from "../../auth/[...nextauth]/typing";
 import { requestOpenai } from "@/app/function/CallGptWithoutReactContext";
 import { NextRequest, NextResponse } from "next/server";
 import { ChatCompletionRequestMessage } from "openai";
+import { type } from "os";
 
 type RequirementResponse = {
   requirement: string;
@@ -15,6 +16,10 @@ type RequirementCompetency = {
   competencies: string[];
 };
 
+type ProjectExperienceResponse = {
+  projects: ProjectExperience[];
+  monthsOfExperience: number;
+};
 type ProjectExperience = {
   id: string;
   title: string;
@@ -34,7 +39,7 @@ type Role = {
   description: string;
 };
 
-const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
+const BASE_URL = process.env.CHEWBACCA_BASE_URL;
 
 export const POST = async (
   req: NextRequest,
@@ -107,12 +112,14 @@ async function generateRequirementResponse(
   token: string,
   employeeAlias: string,
 ): Promise<RequirementResponse> {
-  const relevantProjects = await findRelevantProjectForCompetencies(
+  const projectExperienceResponse = await findRelevantProjectForCompetencies(
     token,
     employeeAlias,
     requirement.competencies,
   );
-  if (!relevantProjects || relevantProjects.length < 1) {
+  const relevantProjects = projectExperienceResponse?.projects ?? [];
+  const monthsOfExperience = projectExperienceResponse?.monthsOfExperience ?? 0; // TODO use this
+  if (relevantProjects.length < 1) {
     return { requirement: requirement.requirement, response: "" };
   }
   const prompt: string = `bruk tabellen under og svar på kravet. Prosjekt med prosjektnavn og kundenavn når du referer til prosjekt. Bruk sitater som er relevant for kravet i teksten.
@@ -194,7 +201,7 @@ async function findRelevantProjectForCompetencies(
   token: string,
   employeeAlias: string,
   competencies: string[],
-): Promise<ProjectExperience[] | undefined> {
+): Promise<ProjectExperienceResponse | undefined> {
   const request = await fetch(
     `${BASE_URL}/employees/cv/projectExperiences?alias=${employeeAlias}&country=no&competencies=${competencies.join(
       "&competencies",
@@ -209,7 +216,7 @@ async function findRelevantProjectForCompetencies(
   if (!request.ok) {
     return Promise.resolve(undefined);
   }
-  return (await request.json()) as ProjectExperience[];
+  return (await request.json()) as ProjectExperienceResponse;
 }
 
 function projectExperienceToText(projectExperience: ProjectExperience): string {
