@@ -4,7 +4,6 @@ import { CustomSession } from "../../auth/[...nextauth]/typing";
 import { requestOpenai } from "@/app/function/CallGptWithoutReactContext";
 import { NextRequest, NextResponse } from "next/server";
 import { ChatCompletionRequestMessage } from "openai";
-import { type } from "os";
 
 type RequirementResponse = {
   requirement: string;
@@ -48,6 +47,12 @@ export const POST = async (
   const { employeeAlias, requirements } = await req.json();
 
   const session = (await getServerSession(authOptions)) as CustomSession;
+  if (
+    !session.refresh_token_expiry ||
+    Date.now() > session.refresh_token_expiry
+  ) {
+    return new Response(null, { status: 401 });
+  }
   const token = session.access_token;
 
   const result =

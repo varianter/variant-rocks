@@ -54,6 +54,9 @@ function _EmployeeCV({ employeeAlias }: SummaryOfQualificationProps) {
       body: JSON.stringify({ employeeAlias, requirements }),
     })
       .then(async (response) => {
+        if (response.status === 401) {
+          window.location.href = "/api/auth/signin";
+        }
         return await response.json();
       })
       .then((data) => {

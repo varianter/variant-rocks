@@ -33,6 +33,7 @@ export const authOptions: NextAuthOptions = {
         customToken.access_token = account.access_token;
         customToken.refresh_token = account.refresh_token;
         customToken.expiry = account.expires_at ?? Date.now() + 30 * 60 * 1000;
+        customToken.refresh_expiry = Date.now() + 24 * 60 * 60 * 1000;
       } else if (customToken.expiry && Date.now() > customToken.expiry) {
         refreshAccessToken(customToken);
       }
@@ -40,10 +41,11 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
+      const customToken = token as CustomToken;
       if (session) {
         session = Object.assign({}, session, {
-          id_token: token.id_token,
-          access_token: token.access_token,
+          refresh_token_expiry: customToken.refresh_expiry,
+          access_token: customToken.access_token,
         });
       }
       return session;
@@ -101,6 +103,7 @@ async function refreshAccessToken(token: CustomToken) {
       token.expiry = data.expires_at ?? Date.now() + 30 * 60 * 1000; //expires after 30 minutes
       if (data.refresh_token) {
         token.refresh_token = data.refresh_token;
+        token.refresh_expiry = Date.now() + 24 * 60 * 60 * 1000;
       }
     } else {
       console.error("Failed to refresh access token:", response.statusText);
