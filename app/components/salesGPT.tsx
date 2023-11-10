@@ -10,7 +10,7 @@ import styles from "../components/home.module.scss";
 import dynamic from "next/dynamic";
 import { Loading } from "./home";
 import { ErrorBoundary } from "./error";
-import { EmployeeItemProp } from "../function/Employees";
+import { EmployeeItemProp } from "../salesGPT/types";
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
   loading: () => <Loading noLogo />,
