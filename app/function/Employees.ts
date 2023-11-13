@@ -37,3 +37,20 @@ export async function getEmployeeCVData(employeeAlias: string, token: string) {
   const employeeCVData = await requestEmployeeCVData(employeeAlias, token);
   return employeeCVData;
 }
+
+async function requestEmployeeData(
+  employeeAlias: string,
+): Promise<EmployeeItem | undefined> {
+  const request = await fetch(
+    `${BASE_URL}/employees/${employeeAlias}?country=no`,
+  );
+  if (!request.ok) {
+    return undefined;
+  }
+  return (await request.json()) as EmployeeItem;
+}
+
+export async function getEmployeeData(employeeAlias: string) {
+  const employeeData = await requestEmployeeData(employeeAlias);
+  return employeeData;
+}

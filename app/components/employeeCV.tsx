@@ -10,7 +10,7 @@ import styles from "../components/home.module.scss";
 import specificStyles from "../components/employeeCv.module.scss";
 import Sidebar from "./sidebar";
 import CV from "./CV";
-import { EmployeeCVDetails } from "../salesGPT/types";
+import { EmployeeItem } from "../salesGPT/types";
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
   loading: () => <Loading noLogo />,
@@ -27,7 +27,7 @@ const useHasHydrated = () => {
 };
 
 type SummaryOfQualificationProps = {
-  employee: EmployeeCVDetails | undefined;
+  employee: EmployeeItem | undefined;
 };
 
 function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
@@ -91,7 +91,7 @@ function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
         ) : (
           <>
             <div>
-              <p>Konsulent: {employee.email.split("@")[0]}</p>
+              <p>Konsulent: {employee.name}</p>
             </div>
             <textarea
               className={specificStyles.RequirementInput}
