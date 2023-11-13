@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Error from "next/error";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../api/auth/auth-options";
 import EmployeeCV from "@/app/components/employeeCV";
