@@ -8,6 +8,7 @@ import { ChatCompletionRequestMessage } from "openai";
 type RequirementResponse = {
   requirement: string;
   response: string;
+  experience: string;
 };
 
 type RequirementCompetency = {
@@ -123,18 +124,32 @@ async function generateRequirementResponse(
     requirement.competencies,
   );
   const relevantProjects = projectExperienceResponse?.projects ?? [];
-  const monthsOfExperience = projectExperienceResponse?.monthsOfExperience ?? 0; // TODO use this
+  const monthsOfExperience = projectExperienceResponse?.monthsOfExperience ?? 0;
+  const yearsOfExperience = monthsExperienceToYears(monthsOfExperience);
+  const experience = yearsOfExperience
+    ? yearsOfExperience + "års erfaring"
+    : monthsOfExperience + "måneders erfaring";
   if (relevantProjects.length < 1) {
-    return { requirement: requirement.requirement, response: "" };
+    return {
+      requirement: requirement.requirement,
+      response: "",
+      experience: "ingen erfaring",
+    };
   }
-  const prompt: string = `bruk tabellen under og svar på kravet. Prosjekt med prosjektnavn og kundenavn når du referer til prosjekt. Bruk sitater som er relevant for kravet i teksten.
+  const prompt: string = `bruk tabellen under og svar på kravet. 
+  Prosjekt med prosjektnavn og kundenavn når du referer til prosjekt. 
+  Bruk sitater som er relevant for kravet i teksten.
     krav : ${
       requirement.requirement
     } tabell med utvalgte prosjekt: prosjektnavn,kundenavn,beskrivelse,rolle\n   ${relevantProjects
     ?.map(projectExperienceToText)
     .join("\n")}`;
   const response = await requestOpenai([{ role: "user", content: prompt }]);
-  return { requirement: requirement.requirement, response: response };
+  return {
+    requirement: requirement.requirement,
+    response: response,
+    experience: experience,
+  };
 }
 
 async function generateKeywordsFromRequirements(
@@ -151,7 +166,7 @@ async function generateKeywordsFromRequirements(
     {
       role: "user",
       content:
-        'Glem tidligere nøkkelordliste. Her er den nye nøkkelordlisten [BÆREKRAFTIG DESIGN, BRUKERTESTING, INNSIKTSARBEID] svar hvilke nøkkelord som er relevant for kravet : "kandidaten må ha lang erfaring med Java". Svaret skal være en JSON liste som er et utvalg fra den nye nøkkelordlisten. Bare nøkkelord fra nøkkelordlisten kan bli med i svaret. ',
+        'Glem tidligere nøkkelordliste. Her er den nye nøkkelordlisten [BÆREKRAFTIG DESIGN, BRUKERTESTING, INNSIKTSARBEID] svar hvilke nøkkelord som er relevant for kravet : "kandidaten må ha lang erfaring med Java". Svaret skal være en JSON liste som er et utvalg fra den nye nøkkelordlisten. Bare nøkkelord fra nøkkelordlisten kan bli med i svaret.',
     },
     {
       role: "assistant",
@@ -173,8 +188,14 @@ async function generateKeywordsFromRequirements(
 async function generateSummaryFromRequirementResponses(
   requirementResponses: RequirementResponse[],
 ): Promise<string> {
-  const prompt: string = `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens erfaring som svarer på kravene. Sammendraget bør være langt. Husk å referer til prosjektene og kunde i sammendraget. Husk å inkludere alle rader ifra tabellen i svaret.
-  Det kan hende at samme prosjekt er brukt i de ulike begrunnelsene. Ikke bruk noe som ikke er med i tabellen. ${requirementResponsesToTable(
+  const prompt: string = `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens 
+  erfaring som svarer på kravene.
+  Sammendraget bør være langt. 
+  Husk å referer til prosjektene og kunde i sammendraget.
+  Husk å inkludere alle rader ifra tabellen i svaret.
+  Det kan hende at samme prosjekt er brukt i de ulike begrunnelsene.
+  Ikke bruk noe som ikke er med i tabellen. 
+  Få med hvor mange års erfaring konsulenten har. ${requirementResponsesToTable(
     requirementResponses,
   )}`;
   const summary = await requestOpenai([{ role: "user", content: prompt }]);
@@ -236,8 +257,23 @@ function requirementResponsesToTable(
 ): string {
   const header = "Requirement,Response\n";
   const rows = requirementResponses
-    .map((rr) => `${rr.requirement},${rr.response}`)
+    .map((rr) => `${rr.requirement},${rr.response},${rr.experience}`)
     .join("\n");
   const csv = header + rows + "\n";
   return csv;
+}
+
+function monthsExperienceToYears(months: number): number | null {
+  const years = Math.floor(months / 12);
+  const remainderMonths = months % 12;
+  if (remainderMonths > 8) {
+    return years + 1;
+  }
+  if (remainderMonths > 4) {
+    return years + 0.5;
+  }
+  if (years === 0) {
+    return null;
+  }
+  return years;
 }
