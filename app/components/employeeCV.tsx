@@ -13,7 +13,6 @@ import { EmployeeItem } from "../salesGPT/types";
 import Select, { ActionMeta, SingleValue } from "react-select";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { NavigateOptions } from "next/dist/shared/lib/app-router-context";
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
   loading: () => <Loading noLogo />,
@@ -70,14 +69,11 @@ function _EmployeeCV({ employees }: SummaryOfQualificationProps) {
   if (isLoading) {
     return <Loading />;
   }
-  if (!selectedEmployee) {
-    //return <Error statusCode={404} />;
-  }
 
   async function handleButtonClick(requirementText: string): Promise<void> {
     setIsLoading(true);
     const requirements = requirementText.split("\n").filter((s) => s.length);
-    const employeeAlias = employees[0]?.email.split("@")[0];
+    const employeeAlias = aliasFromEmail(selectedEmployee?.email ?? "");
     await fetch("/api/chewbacca/generateSummaryOfQualifications", {
       method: "POST",
       headers: {
@@ -165,6 +161,6 @@ export default function EmployeeCV({ employees }: SummaryOfQualificationProps) {
   );
 }
 
-function aliasFromEmail(email: string) {
-  return email.split("@")[0];
+function aliasFromEmail(email: string | undefined) {
+  return email?.split("@")[0];
 }
