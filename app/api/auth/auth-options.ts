@@ -35,7 +35,9 @@ export const authOptions: NextAuthOptions = {
         customToken.expiry = account.expires_at ?? Date.now() + 30 * 60 * 1000;
         customToken.refresh_expiry = Date.now() + 24 * 60 * 60 * 1000;
       } else if (customToken.expiry && Date.now() > customToken.expiry) {
-        refreshAccessToken(customToken);
+        const refreshedToken: CustomToken | undefined =
+          await refreshAccessToken(customToken);
+        return refreshedToken ?? customToken;
       }
       return customToken;
     },
@@ -68,12 +70,13 @@ export async function getProperServerSession(
   );
 }
 
-async function refreshAccessToken(token: CustomToken) {
+async function refreshAccessToken(
+  token: CustomToken,
+): Promise<CustomToken | undefined> {
   const refreshToken = token.refresh_token;
-
   if (!refreshToken) {
     // If there is no refresh token, you can't refresh the access token.
-    return;
+    return token;
   }
 
   // Make a request to your Azure AD token endpoint to refresh the access token
@@ -94,10 +97,8 @@ async function refreshAccessToken(token: CustomToken) {
       },
       body: requestBody.toString(),
     });
-
     if (response.ok) {
       const data = await response.json();
-
       // Update the token with the new access token and possibly a new refresh token
       token.access_token = data.access_token;
       token.expiry = data.expires_at ?? Date.now() + 30 * 60 * 1000; //expires after 30 minutes
@@ -105,6 +106,7 @@ async function refreshAccessToken(token: CustomToken) {
         token.refresh_token = data.refresh_token;
         token.refresh_expiry = Date.now() + 24 * 60 * 60 * 1000;
       }
+      return token;
     } else {
       console.error("Failed to refresh access token:", response.statusText);
     }

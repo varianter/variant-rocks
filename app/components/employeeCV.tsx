@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "./error";
 import dynamic from "next/dynamic";
-import Error from "next/error";
 import { Loading } from "./home";
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
@@ -11,6 +10,9 @@ import specificStyles from "../components/employeeCv.module.scss";
 import Sidebar from "./sidebar";
 import CV from "./CV";
 import { EmployeeItem } from "../salesGPT/types";
+import Select, { ActionMeta, SingleValue } from "react-select";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
   loading: () => <Loading noLogo />,
@@ -27,11 +29,35 @@ const useHasHydrated = () => {
 };
 
 type SummaryOfQualificationProps = {
-  employee: EmployeeItem | undefined;
+  employees: EmployeeItem[];
 };
 
-function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
+function _EmployeeCV({ employees }: SummaryOfQualificationProps) {
+  const router = useRouter();
+  const pathName = usePathname();
+
+  const selectedEmployeeAlias = useSearchParams().get("employeeAlias") ?? "";
+  const selectedEmployee = employees.find(
+    (emp) => aliasFromEmail(emp.email) === selectedEmployeeAlias,
+  );
+
   const config = useChatStore((state) => state.config);
+  0;
+  const [selectedOption, setSelectEmployee] =
+    React.useState<EmployeeOption | null>({
+      label: selectedEmployee?.name ?? "",
+      value: selectedEmployee,
+    });
+
+  interface EmployeeOption {
+    value: EmployeeItem | undefined;
+    label: string;
+  }
+
+  const options: EmployeeOption[] = employees.map((emp: EmployeeItem) => ({
+    value: emp,
+    label: emp.name,
+  }));
 
   // Setting
   const [openSettings, setOpenSettings] = useState(false);
@@ -43,14 +69,11 @@ function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
   if (isLoading) {
     return <Loading />;
   }
-  if (!employee) {
-    return <Error statusCode={404} />;
-  }
 
   async function handleButtonClick(requirementText: string): Promise<void> {
     setIsLoading(true);
     const requirements = requirementText.split("\n").filter((s) => s.length);
-    const employeeAlias = employee?.email.split("@")[0];
+    const employeeAlias = aliasFromEmail(selectedEmployee?.email ?? "");
     await fetch("/api/chewbacca/generateSummaryOfQualifications", {
       method: "POST",
       headers: {
@@ -74,6 +97,17 @@ function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
       });
   }
 
+  function handleSelectEmployee(
+    newValue: SingleValue<EmployeeOption>,
+    actionMeta: ActionMeta<EmployeeOption>,
+  ): void {
+    setSelectEmployee(newValue);
+    router.push(
+      pathName +
+        `?employeeAlias=${aliasFromEmail(newValue?.value?.email ?? "")}`,
+    );
+  }
+
   return (
     <div
       className={`${
@@ -83,7 +117,12 @@ function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
       }`}
     >
       <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
-        <div></div>
+        <Select
+          options={options}
+          isSearchable={true}
+          value={selectedOption}
+          onChange={handleSelectEmployee}
+        />
       </Sidebar>
       <div style={{ overflow: "auto" }} className={styles["window-content"]}>
         {openSettings ? (
@@ -91,7 +130,7 @@ function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
         ) : (
           <>
             <div>
-              <p>Konsulent: {employee.name}</p>
+              <p>Konsulent: {selectedEmployee?.name}</p>
             </div>
             <textarea
               className={specificStyles.RequirementInput}
@@ -112,12 +151,16 @@ function _EmployeeCV({ employee }: SummaryOfQualificationProps) {
   );
 }
 
-export default function EmployeeCV({ employee }: SummaryOfQualificationProps) {
+export default function EmployeeCV({ employees }: SummaryOfQualificationProps) {
   return (
     <ErrorBoundary
       fallback={<p> Something went wrong with the EmployeeCV! </p>}
     >
-      <_EmployeeCV employee={employee} />
+      <_EmployeeCV employees={employees} />
     </ErrorBoundary>
   );
+}
+
+function aliasFromEmail(email: string | undefined) {
+  return email?.split("@")[0];
 }
