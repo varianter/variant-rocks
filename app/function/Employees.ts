@@ -1,70 +1,5 @@
+import { EmployeeCVDetails, EmployeeItem } from "../salesGPT/types";
 import { requestOpenai } from "./CallGptWithoutReactContext";
-
-export type EmployeeItem = {
-  email: string;
-  name: string;
-  telephone: string;
-  imageUrl: string;
-  officeName: string;
-  startDate: Date;
-};
-
-export type EmployeeItemProp = {
-  employees: EmployeeItem[];
-};
-
-type WorkExperience = {
-  id: string;
-  title: string;
-  description: string;
-  monthFrom: string;
-  yearFrom: string;
-  monthTo: string;
-  yearTo: string;
-};
-
-type Role = {
-  id: string;
-  title: string;
-  description: string;
-};
-
-type ProjectExperience = {
-  id: string;
-  title: string;
-  description: string;
-  monthFrom: string;
-  yearFrom: string;
-  monthTo: string;
-  yearTo: string;
-  roles: Role[];
-  competencies: string[];
-};
-
-type Presentation = {
-  id: string;
-  title: string;
-  description: string;
-  month: string;
-  year: string;
-};
-
-type Certification = {
-  id: string;
-  title: string;
-  description: string;
-  expiryDate: Date;
-  issuedMonth: string;
-  issuedYear: string;
-};
-
-export type EmployeeCV = {
-  email: string;
-  workExperiences: WorkExperience[];
-  projectExperiences: ProjectExperience[];
-  presentations: Presentation[];
-  certifications: Certification[];
-};
 
 const BASE_URL = "https://chewie-webapp-ld2ijhpvmb34c.azurewebsites.net";
 
@@ -95,10 +30,27 @@ async function requestEmployeeCVData(employeeAlias: string, token: string) {
   if (!request.ok) {
     return undefined;
   }
-  return (await request.json()) as EmployeeCV;
+  return (await request.json()) as EmployeeCVDetails;
 }
 
 export async function getEmployeeCVData(employeeAlias: string, token: string) {
   const employeeCVData = await requestEmployeeCVData(employeeAlias, token);
   return employeeCVData;
+}
+
+async function requestEmployeeData(
+  employeeAlias: string,
+): Promise<EmployeeItem | undefined> {
+  const request = await fetch(
+    `${BASE_URL}/employees/${employeeAlias}?country=no`,
+  );
+  if (!request.ok) {
+    return undefined;
+  }
+  return (await request.json()) as EmployeeItem;
+}
+
+export async function getEmployeeData(employeeAlias: string) {
+  const employeeData = await requestEmployeeData(employeeAlias);
+  return employeeData;
 }

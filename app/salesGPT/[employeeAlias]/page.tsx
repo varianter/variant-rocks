@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
-
 import { getServerSession } from "next-auth/next";
-
 import { authOptions } from "../../api/auth/auth-options";
 import EmployeeCV from "@/app/components/employeeCV";
 import { CustomSession } from "@/app/api/auth/[...nextauth]/typing";
+import { getEmployeeData } from "@/app/function/Employees";
 
 export default async function App({
   params,
@@ -15,5 +14,7 @@ export default async function App({
   if (!session) {
     return redirect("/api/auth/signin");
   }
-  return <EmployeeCV employeeAlias={params.employeeAlias} />;
+  const employee = await getEmployeeData(params.employeeAlias);
+
+  return <EmployeeCV employee={employee} />;
 }

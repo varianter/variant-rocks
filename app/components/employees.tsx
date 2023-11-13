@@ -1,7 +1,6 @@
 import EmployeeCard from "./employeeCard";
 import styles from "./home.module.scss";
 import employeeStyles from "./employees.module.scss";
-import { EmployeeItemProp } from "../function/Employees";
 import { useChatStore } from "../store";
 import { isMobileScreen } from "../utils";
 import { useState } from "react";
@@ -9,6 +8,7 @@ import { IconButton } from "./button";
 import ChatIcon from "../icons/chat.svg";
 import SettingsIcon from "../icons/settings.svg";
 import Link from "next/link";
+import { EmployeeItemProp } from "../salesGPT/types";
 
 type EmployeesProps = {
   showSideBar?: (newState: boolean) => void;
