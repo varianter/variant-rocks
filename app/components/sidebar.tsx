@@ -5,7 +5,7 @@ require("../polyfill");
 import { useState, useEffect } from "react";
 
 import { IconButton } from "./button";
-import styles from "./home.module.scss";
+import styles from "./chatHomepage.module.scss";
 
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";

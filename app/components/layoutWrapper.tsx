@@ -1,6 +1,6 @@
 import { isMobileScreen } from "../utils";
 import { useChatStore } from "../store";
-import styles from "./home.module.scss";
+import styles from "./chatHomepage.module.scss";
 
 export default function LayoutWrapper({
   children,

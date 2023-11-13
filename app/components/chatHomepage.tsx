@@ -4,7 +4,7 @@ require("../polyfill");
 
 import { useState, useEffect } from "react";
 
-import styles from "./home.module.scss";
+import styles from "./chatHomepage.module.scss";
 
 import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
@@ -46,7 +46,7 @@ const useHasHydrated = () => {
   return hasHydrated;
 };
 
-function _Home() {
+function _ChatHomepage() {
   const loading = !useHasHydrated();
   const [showSideBar, setShowSideBar] = useState(true);
 
@@ -105,10 +105,10 @@ function _Home() {
   );
 }
 
-export function Home() {
+export function ChatHomepage() {
   return (
     <ErrorBoundary>
-      <_Home></_Home>
+      <_ChatHomepage></_ChatHomepage>
     </ErrorBoundary>
   );
 }

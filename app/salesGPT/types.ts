@@ -63,3 +63,8 @@ export type EmployeeCVDetails = {
   presentations: Presentation[];
   certifications: Certification[];
 };
+
+export type EmployeeOption = {
+  value: EmployeeItem | undefined;
+  label: string;
+};

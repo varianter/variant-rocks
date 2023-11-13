@@ -35,3 +35,12 @@
 .window-action-button {
   margin-left: 10px;
 }
+
+.window-content {
+  position: relative;
+
+  width: var(--window-content-width);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

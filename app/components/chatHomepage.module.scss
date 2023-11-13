@@ -50,15 +50,6 @@
   box-shadow: inset -2px 0px 2px 0px rgb(0, 0, 0, 0.05);
 }
 
-.window-content {
-  position: relative;
-
-  width: var(--window-content-width);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .mobile {
   display: none;
 }

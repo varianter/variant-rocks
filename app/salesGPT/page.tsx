@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "../api/auth/auth-options";
 import getAllEmployees from "../function/Employees";
-import EmployeeCV from "../components/employeeCV";
+import SalesGPT from "../components/salesGPT";
 
 export default async function App() {
   const employees = await getAllEmployees();
@@ -13,6 +13,6 @@ export default async function App() {
     return redirect("/api/auth/signin");
   }
   if (employees) {
-    return <EmployeeCV employees={employees} />;
+    return <SalesGPT employees={employees} />;
   }
 }
