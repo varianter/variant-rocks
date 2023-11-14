@@ -96,7 +96,6 @@ function EmployeeSelect({
       // @ts-ignore
       styles={selectStyles}
       components={{ DropdownIndicator }}
-      // menuIsOpen={true}
     />
   );
 }
