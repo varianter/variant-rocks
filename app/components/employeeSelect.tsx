@@ -33,23 +33,7 @@ const selectStyles: StylesConfig<EmployeeOption> = {
   control: (styles) => ({
     ...styles,
     borderRadius: "0.7rem",
-    color: "var(--black)",
     borderColor: "var(--white)",
-    background: "var(--white)",
-  }),
-  menu: (styles) => ({
-    ...styles,
-    color: "var(--black)",
-    background: "var(--white)",
-  }),
-  singleValue: (styles) => ({
-    ...styles,
-    color: "var(--black)",
-  }),
-  option: (styles) => ({
-    ...styles,
-    color: "var(--black)",
-    background: "var(--white)",
   }),
 };
 
