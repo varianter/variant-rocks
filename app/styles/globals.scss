@@ -1,10 +1,12 @@
 @mixin light {
   /* color */
-  --white: #FBFAF7;
+  --white: #fbfaf7;
   --black: rgb(48, 48, 48);
   --gray: rgb(250, 250, 250);
-  --primary: #E61A6B;
-  --second: #EDE8D7;
+  --text-light: #a9a9a9;
+  --primary: #e61a6b;
+  --second: #ede8d7;
+  --third: #423d89;
   --hover-color: #f3f3f3;
   --bar-color: rgba(0, 0, 0, 0.1);
   --theme-color: var(--gray);
@@ -19,11 +21,13 @@
 
 @mixin dark {
   /* color */
-  --white: #0D0C1B;
+  --white: #0d0c1b;
   --black: rgb(187, 187, 187);
   --gray: rgb(21, 21, 21);
-  --primary: #E61A6B;
-  --second: #1A1837;
+  --text-light: #cacaca;
+  --primary: #e61a6b;
+  --second: #1a1837;
+  --third: #423d89;
   --hover-color: #323232;
 
   --bar-color: rgba(255, 255, 255, 0.1);

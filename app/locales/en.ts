@@ -172,6 +172,21 @@ const en = {
     Edit: "Contextual and Memory Prompts",
     Add: "Add One",
   },
+  SalesGPT: {
+    Title: "SalesGPT",
+    ChooseEmployee: "Choose employee",
+    SelectPlaceholder: "What employee do you want to get the CV for?",
+    Requirements: "Requirements",
+    RequirementsPlaceholder:
+      "The candidate must have experience with X\nThe candidate must have experience with Y\nExperience with Z is a plus",
+    Summary: "Summary",
+    SummaryPlaceholder: "Paste a summary of the employee",
+    Analyse: "Analyse",
+    EmployeeCVSummary: {
+      Empty: "Do an analysis to get a consise summary of the employee",
+    },
+    Consultant: "Consultant",
+  },
 };
 
 export type LocaleType = typeof en;

@@ -6,6 +6,7 @@ import styles from "../components/employeeCVSummary.module.scss";
 import CV from "./CV";
 import { EmployeeItem } from "../salesGPT/types";
 import { aliasFromEmail } from "../utils";
+import Locale from "../locales";
 
 type EmployeeCVSummaryProps = {
   employee: EmployeeItem | undefined;
@@ -50,7 +51,9 @@ function _EmployeeCVSummary({ employee }: EmployeeCVSummaryProps) {
 
   return (
     <div>
-      <p>Konsulent: {employee?.name}</p>
+      <p>
+        {Locale.SalesGPT.Consultant}: {employee?.name}
+      </p>
       <div className={styles["input"]}>
         <textarea
           className={styles["requirements"]}
@@ -64,7 +67,19 @@ function _EmployeeCVSummary({ employee }: EmployeeCVSummaryProps) {
           Generer oppsummering av kvalifikasjoner
         </button>
       </div>
-      <CV GPTResponse={generatedText}></CV>
+    </div>
+  );
+}
+
+function _EmptyEmployeeSummary() {
+  return (
+    <div className={styles["empty"]}>
+      <div className={styles["content-box"]}>
+        <span className={styles["emoji"]}>&#x1F916;</span>
+        <p className={styles["text"]}>
+          {Locale.SalesGPT.EmployeeCVSummary.Empty}
+        </p>
+      </div>
     </div>
   );
 }
@@ -76,7 +91,11 @@ export default function EmployeeCVSummary({
     <ErrorBoundary
       fallback={<p> Something went wrong with the EmployeeCV! </p>}
     >
-      <_EmployeeCVSummary employee={employee} />
+      {employee ? (
+        <_EmployeeCVSummary employee={employee} />
+      ) : (
+        <_EmptyEmployeeSummary />
+      )}
     </ErrorBoundary>
   );
 }

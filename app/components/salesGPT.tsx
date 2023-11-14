@@ -1,19 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import Select, { SingleValue } from "react-select";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { EmployeeItem, EmployeeOption } from "../salesGPT/types";
+import { EmployeeItem } from "../salesGPT/types";
 import EmployeeCVSummary from "./employeeCVSummary";
 import { ErrorBoundary } from "./error";
-import LayoutWrapper from "./layoutWrapper";
 import Sidebar from "./sidebar";
 import { aliasFromEmail } from "../utils";
 import { Settings } from "./settings";
+import Locale from "../locales";
+import EmployeeSelect from "./employeeSelect";
 import styles from "../components/salesGPT.module.scss";
+// import { IconButton } from "./button";
 
 function _SalesGPT({ employees }: SalesGPTProps) {
   const router = useRouter();
   const pathName = usePathname();
+  const title = Locale.SalesGPT.Title;
 
   const [openSettings, setOpenSettings] = useState(false);
 
@@ -21,35 +23,60 @@ function _SalesGPT({ employees }: SalesGPTProps) {
   const selectedEmployee = employees.find(
     (emp) => aliasFromEmail(emp.email) === selectedEmployeeAlias,
   );
-  const [selectedOption, setSelectEmployee] = useState<EmployeeOption | null>({
-    label: selectedEmployee?.name ?? "",
-    value: selectedEmployee,
-  });
-  const options: EmployeeOption[] = employees.map((emp: EmployeeItem) => ({
-    value: emp,
-    label: emp.name,
-  }));
 
-  function handleSelectEmployee(newValue: SingleValue<EmployeeOption>): void {
-    setSelectEmployee(newValue);
-    router.push(
-      pathName +
-        `?employeeAlias=${aliasFromEmail(newValue?.value?.email ?? "")}`,
-    );
+  function handleSelectEmployee(newValue: EmployeeItem | undefined): void {
+    if (newValue === undefined) {
+      router.push(pathName);
+    } else {
+      router.push(
+        pathName + `?employeeAlias=${aliasFromEmail(newValue?.email)}`,
+      );
+    }
   }
 
   return (
-    <LayoutWrapper>
-      <Sidebar title="SalgGpt" subTitle="" setOpenSettings={setOpenSettings}>
-        <Select
-          options={options}
-          isSearchable={true}
-          value={selectedOption}
-          onChange={handleSelectEmployee}
-        />
+    <div className={styles.container}>
+      <Sidebar title={title} subTitle="" setOpenSettings={setOpenSettings}>
+        <div className={styles["sidebar-content"]}>
+          <div className={styles["input-field"]}>
+            <label htmlFor="choose-employee">
+              {Locale.SalesGPT.ChooseEmployee}
+            </label>
+            <EmployeeSelect
+              employees={employees}
+              selectedEmployee={selectedEmployee}
+              handleSelectEmployee={handleSelectEmployee}
+            />
+          </div>
+          {/* <div className={styles["input-field"]}>
+            <label htmlFor="requirements">{Locale.SalesGPT.Requirements}</label>
+            <textarea
+              id="requirements"
+              className={styles["text-input"]}
+              placeholder={Locale.SalesGPT.RequirementsPlaceholder}
+            ></textarea>
+          </div>
+          <div className={styles["input-field"]}>
+            <label htmlFor="summary">{Locale.SalesGPT.Summary}</label>
+            <textarea
+              id="summary"
+              className={styles["text-input"]}
+              placeholder={Locale.SalesGPT.SummaryPlaceholder}
+            ></textarea>
+          </div>
+          <div className={styles["analyse-button-container"]}>
+            <IconButton
+              key="analyse"
+              bordered
+              className={styles["analyse-button"]}
+              text={Locale.SalesGPT.Analyse}
+              onClick={() => {}}
+            />
+          </div> */}
+        </div>
       </Sidebar>
 
-      <div style={{ overflow: "auto" }} className={styles["window-content"]}>
+      <div className={styles["right-pane"]}>
         {openSettings ? (
           <Settings closeSettings={() => setOpenSettings(false)} />
         ) : (
@@ -57,7 +84,7 @@ function _SalesGPT({ employees }: SalesGPTProps) {
           <EmployeeCVSummary employee={selectedEmployee} />
         )}
       </div>
-    </LayoutWrapper>
+    </div>
   );
 }
 
