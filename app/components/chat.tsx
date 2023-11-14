@@ -37,7 +37,7 @@ import { Prompt, usePromptStore } from "../store/prompt";
 import Locale from "../locales";
 
 import { IconButton } from "./button";
-import styles from "./home.module.scss";
+import styles from "./chatHomepage.module.scss";
 import chatStyle from "./chat.module.scss";
 
 import { Input, Modal, showModal, showToast } from "./ui-lib";
