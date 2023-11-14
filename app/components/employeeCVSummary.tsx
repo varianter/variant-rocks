@@ -19,7 +19,7 @@ function _EmployeeCVSummary({ employee }: EmployeeCVSummaryProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   if (isLoading) {
-    return <Loading />;
+    return <Loading noLogo />;
   }
 
   async function handleButtonClick(requirementText: string): Promise<void> {
@@ -66,6 +66,7 @@ function _EmployeeCVSummary({ employee }: EmployeeCVSummaryProps) {
         <button onClick={async () => handleButtonClick(requirementText)}>
           Generer oppsummering av kvalifikasjoner
         </button>
+        <CV GPTResponse={generatedText}></CV>
       </div>
     </div>
   );
