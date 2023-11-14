@@ -43,11 +43,14 @@
 .text-input {
   min-height: 5rem;
   font-size: 1rem;
+  border-radius: 0.8rem;
+  padding: 1rem;
+
   border-color: var(--white);
   background-color: var(--white);
 
   &::placeholder {
-    color: #a9a9a9;
+    color: var(--text-light);
   }
 }
 

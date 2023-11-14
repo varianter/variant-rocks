@@ -10,43 +10,17 @@ import Locale from "../locales";
 
 type EmployeeCVSummaryProps = {
   employee: EmployeeItem | undefined;
+  isLoading: boolean;
+  generatedText: string;
 };
 
-function _EmployeeCVSummary({ employee }: EmployeeCVSummaryProps) {
-  const [requirementText, setRequirementText] = useState("");
-  const [generatedText, setGeneratedText] = useState("");
-
-  const [isLoading, setIsLoading] = useState(false);
-
+function _EmployeeCVSummary({
+  employee,
+  isLoading,
+  generatedText,
+}: EmployeeCVSummaryProps) {
   if (isLoading) {
-    return <Loading noLogo />;
-  }
-
-  async function handleButtonClick(requirementText: string): Promise<void> {
-    setIsLoading(true);
-    const requirements = requirementText.split("\n").filter((s) => s.length);
-    const employeeAlias = aliasFromEmail(employee?.email ?? "");
-    await fetch("/api/chewbacca/generateSummaryOfQualifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ employeeAlias, requirements }),
-    })
-      .then(async (response) => {
-        if (response.status === 401) {
-          window.location.href = "/api/auth/signin";
-        }
-        return await response.json();
-      })
-      .then((data) => {
-        setGeneratedText(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log("Error:", error);
-        setIsLoading(false);
-      });
+    return <Loading />;
   }
 
   return (
@@ -54,20 +28,7 @@ function _EmployeeCVSummary({ employee }: EmployeeCVSummaryProps) {
       <p>
         {Locale.SalesGPT.Consultant}: {employee?.name}
       </p>
-      <div className={styles["input"]}>
-        <textarea
-          className={styles["requirements"]}
-          placeholder={
-            "Kandidaten må ha erfaring med X\nKandidaten må også ha kjennskap til Y\nErfaring med Z er et pluss"
-          }
-          value={requirementText}
-          onChange={(event) => setRequirementText(event.target.value)}
-        ></textarea>
-        <button onClick={async () => handleButtonClick(requirementText)}>
-          Generer oppsummering av kvalifikasjoner
-        </button>
-        <CV GPTResponse={generatedText}></CV>
-      </div>
+      <CV GPTResponse={generatedText}></CV>
     </div>
   );
 }
@@ -87,13 +48,19 @@ function _EmptyEmployeeSummary() {
 
 export default function EmployeeCVSummary({
   employee,
+  isLoading,
+  generatedText,
 }: EmployeeCVSummaryProps) {
   return (
     <ErrorBoundary
       fallback={<p> Something went wrong with the EmployeeCV! </p>}
     >
       {employee ? (
-        <_EmployeeCVSummary employee={employee} />
+        <_EmployeeCVSummary
+          isLoading={isLoading}
+          employee={employee}
+          generatedText={generatedText}
+        />
       ) : (
         <_EmptyEmployeeSummary />
       )}
