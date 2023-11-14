@@ -28,7 +28,7 @@ const selectStyles: StylesConfig<EmployeeOption> = {
     color: "var(--text-light)",
     fontSize: "1rem",
     fontWeight: "400",
-  }), // TODO: Extract colors
+  }),
   indicatorSeparator: () => ({ display: "hidden" }),
   control: (styles) => ({
     ...styles,
