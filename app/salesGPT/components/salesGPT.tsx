@@ -1,18 +1,19 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { EmployeeItem } from "../types";
+import { EmployeeItem, HelpOption } from "../types";
 import EmployeeCVSummary from "./employeeCVSummary";
 import { ErrorBoundary } from "../../components/error";
-import { aliasFromEmail } from "../../utils";
+import { aliasFromEmail, sortEmployeeByName } from "../../utils";
 import styles from "../components/salesGPT.module.scss";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Locale from "../../locales";
 import EmployeeSelect from "./employeeSelect";
 import { IconButton } from "../../components/button";
 import { SalesSidebar } from "./sales-sidebar";
 import { Path } from "../../constant";
 import ChatIcon from "../../icons/chat.svg";
+import HelpSelect from "./helpSelect";
 
 function _SalesGPT() {
   const router = useRouter();
@@ -21,6 +22,15 @@ function _SalesGPT() {
   const navigate = useNavigate();
 
   const [employees, setEmployees] = useState<EmployeeItem[]>([]);
+
+  const availableHelp: HelpOption[] = [
+    {
+      label: Locale.SalesGPT.Help.Summary,
+      value: "summary",
+    },
+  ];
+  const [selectedHelp, setSelectedHelp] = useState(availableHelp[0]);
+
   const selectedEmployeeAlias = useSearchParams().get("employeeAlias") ?? "";
   const selectedEmployee = employees.find(
     (emp) => aliasFromEmail(emp.email) === selectedEmployeeAlias,
@@ -35,8 +45,6 @@ function _SalesGPT() {
     }
   }
 
-  const location = useLocation();
-
   useEffect(() => {
     fetch("/api/chewbacca/employees", {
       method: "GET",
@@ -46,9 +54,8 @@ function _SalesGPT() {
     })
       .then(async (response) => {
         const data = (await response.json()) as EmployeeItem[];
+        data.sort(sortEmployeeByName);
         setEmployees(data ?? []);
-        const searchParams = new URLSearchParams(location.search);
-        const selectedEmployeeAlias = searchParams.get("employeeAlias") ?? "";
       })
       .catch((error) => {
         console.log(error);
@@ -56,12 +63,10 @@ function _SalesGPT() {
   }, []);
 
   const [requirementText, setRequirementText] = useState("");
-  const [summaryText, setSummaryText] = useState("");
   const [generatedText, setGeneratedText] = useState("");
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
   async function handleAnalyseButtonClick(): Promise<void> {
-    console.debug(requirementText, summaryText, generatedText);
     setIsAnalysisLoading(true);
     const requirements = requirementText.split("\n").filter((s) => s.length);
     const employeeAlias = aliasFromEmail(selectedEmployee?.email);
@@ -93,6 +98,14 @@ function _SalesGPT() {
       <SalesSidebar title={title} subtitle={""}>
         <div className={styles["sidebar-content"]}>
           <div className={styles["input-field"]}>
+            <label htmlFor="choose-help">{Locale.SalesGPT.Help.Choose}</label>
+            <HelpSelect
+              options={availableHelp}
+              selectedHelp={selectedHelp}
+              handleSelectHelp={setSelectedHelp}
+            />
+          </div>
+          <div className={styles["input-field"]}>
             <label htmlFor="choose-employee">
               {Locale.SalesGPT.ChooseEmployee}
             </label>
@@ -110,16 +123,6 @@ function _SalesGPT() {
               placeholder={Locale.SalesGPT.RequirementsPlaceholder}
               value={requirementText}
               onChange={(event) => setRequirementText(event.target.value)}
-            ></textarea>
-          </div>
-          <div className={styles["input-field"]}>
-            <label htmlFor="summary">{Locale.SalesGPT.Summary}</label>
-            <textarea
-              id="summary"
-              className={styles["text-input"]}
-              placeholder={Locale.SalesGPT.SummaryPlaceholder}
-              value={summaryText}
-              onChange={(event) => setSummaryText(event.target.value)}
             ></textarea>
           </div>
           <div className={styles["analyse-button-container"]}>

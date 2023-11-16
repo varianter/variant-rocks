@@ -20,7 +20,7 @@ function _EmployeeCVSummary({
   generatedText,
 }: EmployeeCVSummaryProps) {
   if (isLoading) {
-    return <Loading />;
+    return <Loading noLogo />;
   }
 
   return (

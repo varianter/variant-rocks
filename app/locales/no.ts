@@ -158,9 +158,13 @@ const no: PartialLocaleType = {
   },
   SalesGPT: {
     Title: "SalgsGPT",
+    Help: {
+      Choose: "Hva trenger du hjelp til?",
+      Summary: "Spisse sammendrag",
+    },
     ChooseEmployee: "Velg ansatt",
     SelectPlaceholder: "Hvilken ansatt vil du hente CV-en til?",
-    Requirements: "Kravliste",
+    Requirements: "Krav til kompetanse",
     RequirementsPlaceholder:
       "Kandidaten må ha erfaring med X\nKandidaten må også ha kjennskap til Y\nErfaring med Z er et pluss",
     Summary: "Sammendrag",

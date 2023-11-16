@@ -452,6 +452,10 @@ const cn = {
   // NB: chinese is the default language, so every translation must be added here
   SalesGPT: {
     Title: "SalesGPT",
+    Help: {
+      Choose: "What do you need help with?",
+      Summary: "Create a better summary",
+    },
     ChooseEmployee: "Choose employee",
     SelectPlaceholder: "What employee do you want to get the CV for?",
     Requirements: "Requirements",
