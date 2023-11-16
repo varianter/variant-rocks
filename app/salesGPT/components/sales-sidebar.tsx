@@ -99,12 +99,6 @@ function useDragSideBar() {
       // In useRef the data is non-responsive, so `config.salesSidebarWidth` can't get the dynamic sidebarWidth
       window.removeEventListener("pointermove", handleDragMove);
       window.removeEventListener("pointerup", handleDragEnd);
-
-      // if user click the drag icon, should toggle the sidebar
-      const shouldFireClick = Date.now() - dragStartTime < 300;
-      if (shouldFireClick) {
-        toggleSideBar();
-      }
     };
 
     window.addEventListener("pointermove", handleDragMove);

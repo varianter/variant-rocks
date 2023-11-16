@@ -84,10 +84,6 @@ const selectStyles: StylesConfig<EmployeeOption> = {
     borderColor: "var(--white)",
     height: "7rem",
   }),
-  option: (styles) => ({
-    ...styles,
-    height: "7rem",
-  }),
 };
 
 function EmployeeSelect({
