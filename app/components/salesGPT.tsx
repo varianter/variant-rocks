@@ -9,41 +9,22 @@ import LayoutWrapper from "./layoutWrapper";
 import { aliasFromEmail } from "../utils";
 import { Settings } from "./settings";
 import styles from "../components/salesGPT.module.scss";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Locale from "../locales";
 import EmployeeSelect from "./employeeSelect";
 import { Sidebar } from "./sidebar";
 import { IconButton } from "./button";
-import { SalesSidebar } from "./sidebar-sales";
-//import globalStyles from "./chatHomepage.module.scss";
+import { SalesSidebar } from "./sales-sidebar";
+import { Path } from "../constant";
+import ChatIcon from "../icons/chat.svg";
 
 function _SalesGPT() {
   const router = useRouter();
   const pathName = usePathname();
   const title = Locale.SalesGPT.Title;
-
-  const [openSettings, setOpenSettings] = useState(false);
+  const navigate = useNavigate();
 
   const [employees, setEmployees] = useState<EmployeeItem[]>([]);
-  // const [selectedEmployee, setEmployee] = useState<EmployeeItem | undefined>(
-  //   undefined,
-  // );
-  // const [selectedOption, setSelectEmployee] = useState<EmployeeOption | null>({
-  //   label: selectedEmployee?.name ?? "",
-  //   value: selectedEmployee,
-  // });
-  // const options: EmployeeOption[] = employees.map((emp: EmployeeItem) => ({
-  //   value: emp,
-  //   label: emp.name,
-  // }));
-
-  // function handleSelectEmployee(newValue: SingleValue<EmployeeOption>): void {
-  //   setSelectEmployee(newValue);
-  //   router.push(
-  //     pathName +
-  //       `?employeeAlias=${aliasFromEmail(newValue?.value?.email ?? "")}`,
-  //   );
-  // }
   const selectedEmployeeAlias = useSearchParams().get("employeeAlias") ?? "";
   const selectedEmployee = employees.find(
     (emp) => aliasFromEmail(emp.email) === selectedEmployeeAlias,
@@ -72,10 +53,6 @@ function _SalesGPT() {
         setEmployees(data ?? []);
         const searchParams = new URLSearchParams(location.search);
         const selectedEmployeeAlias = searchParams.get("employeeAlias") ?? "";
-        // const employee = data.find(
-        //   (emp) => aliasFromEmail(emp.email) === selectedEmployeeAlias,
-        // );
-        // setSelectEmployee({ label: employee?.name ?? "", value: employee });
       })
       .catch((error) => {
         console.log(error);
@@ -88,6 +65,7 @@ function _SalesGPT() {
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
   async function handleAnalyseButtonClick(): Promise<void> {
+    console.debug(requirementText, summaryText, generatedText);
     setIsAnalysisLoading(true);
     const requirements = requirementText.split("\n").filter((s) => s.length);
     const employeeAlias = aliasFromEmail(selectedEmployee?.email);
@@ -134,8 +112,8 @@ function _SalesGPT() {
               id="requirements"
               className={styles["text-input"]}
               placeholder={Locale.SalesGPT.RequirementsPlaceholder}
-              // value={requirementText}
-              // onChange={(event) => setRequirementText(event.target.value)}
+              value={requirementText}
+              onChange={(event) => setRequirementText(event.target.value)}
             ></textarea>
           </div>
           <div className={styles["input-field"]}>
@@ -144,21 +122,25 @@ function _SalesGPT() {
               id="summary"
               className={styles["text-input"]}
               placeholder={Locale.SalesGPT.SummaryPlaceholder}
-              // value={summaryText}
-              // onChange={(event) => setSummaryText(event.target.value)}
+              value={summaryText}
+              onChange={(event) => setSummaryText(event.target.value)}
             ></textarea>
           </div>
           <div className={styles["analyse-button-container"]}>
             <IconButton
               key="analyse"
               bordered
-              icon={<span></span>}
               className={styles["analyse-button"]}
               text={Locale.SalesGPT.Analyse}
               onClick={handleAnalyseButtonClick}
             />
           </div>
         </div>
+        <IconButton
+          text={"Tilbake til chat"}
+          icon={<ChatIcon />}
+          onClick={() => navigate(Path.Home)}
+        />
       </SalesSidebar>
 
       <div style={{ overflow: "auto" }} className={styles["window-content"]}>

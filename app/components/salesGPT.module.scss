@@ -1,17 +1,17 @@
 @import "./window.scss";
 
 @mixin container {
-  --sidebar-width: 50%;
-  --window-content-width: calc(100% - var(--sidebar-width));
+  // --sidebar-width: 50%;
+  // --window-content-width: calc(100% - var(--sidebar-width));
   background-color: var(--white);
   border: var(--border-in-light);
   border-radius: 20px;
   box-shadow: var(--shadow);
   color: var(--black);
   background-color: var(--white);
-  min-width: 600px;
-  min-height: 480px;
-  max-width: 1200px;
+  //min-width: 600px;
+  //min-height: 480px;
+  //max-width: 1200px;
 
   display: flex;
   flex-flow: row;

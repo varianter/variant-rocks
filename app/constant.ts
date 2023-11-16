@@ -52,6 +52,11 @@ export const MAX_SIDEBAR_WIDTH = 500;
 export const MIN_SIDEBAR_WIDTH = 230;
 export const NARROW_SIDEBAR_WIDTH = 100;
 
+export const DEFAULT_SALES_SIDEBAR_WIDTH = 500;
+export const MAX_SALES_SIDEBAR_WIDTH = 1000;
+export const MIN_SALES_SIDEBAR_WIDTH = 300;
+export const NARROW_SALES_SIDEBAR_WIDTH = 100;
+
 export const ACCESS_CODE_PREFIX = "nk-";
 
 export const LAST_INPUT_KEY = "last-input";

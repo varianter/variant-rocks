@@ -20,10 +20,10 @@ import Locale from "../locales";
 import { useAppConfig, useChatStore } from "../store";
 
 import {
-  DEFAULT_SIDEBAR_WIDTH,
-  MAX_SIDEBAR_WIDTH,
-  MIN_SIDEBAR_WIDTH,
-  NARROW_SIDEBAR_WIDTH,
+  DEFAULT_SALES_SIDEBAR_WIDTH as DEFAULT_SIDEBAR_WIDTH,
+  MAX_SALES_SIDEBAR_WIDTH as MAX_SIDEBAR_WIDTH,
+  MIN_SALES_SIDEBAR_WIDTH as MIN_SIDEBAR_WIDTH,
+  NARROW_SALES_SIDEBAR_WIDTH as NARROW_SIDEBAR_WIDTH,
   Path,
   REPO_URL,
 } from "../constant";
@@ -68,15 +68,17 @@ function useDragSideBar() {
 
   const config = useAppConfig();
   const startX = useRef(0);
-  const startDragWidth = useRef(config.sidebarWidth ?? DEFAULT_SIDEBAR_WIDTH);
+  const startDragWidth = useRef(
+    config.salesSidebarWidth ?? DEFAULT_SIDEBAR_WIDTH,
+  );
   const lastUpdateTime = useRef(Date.now());
 
   const toggleSideBar = () => {
     config.update((config) => {
-      if (config.sidebarWidth < MIN_SIDEBAR_WIDTH) {
-        config.sidebarWidth = DEFAULT_SIDEBAR_WIDTH;
+      if (config.salesSidebarWidth < MIN_SIDEBAR_WIDTH) {
+        config.salesSidebarWidth = DEFAULT_SIDEBAR_WIDTH;
       } else {
-        config.sidebarWidth = NARROW_SIDEBAR_WIDTH;
+        config.salesSidebarWidth = NARROW_SIDEBAR_WIDTH;
       }
     });
   };
@@ -84,7 +86,7 @@ function useDragSideBar() {
   const onDragStart = (e: MouseEvent) => {
     // Remembers the initial width each time the mouse is pressed
     startX.current = e.clientX;
-    startDragWidth.current = config.sidebarWidth;
+    startDragWidth.current = config.salesSidebarWidth;
     const dragStartTime = Date.now();
 
     const handleDragMove = (e: MouseEvent) => {
@@ -96,15 +98,15 @@ function useDragSideBar() {
       const nextWidth = limit(startDragWidth.current + d);
       config.update((config) => {
         if (nextWidth < MIN_SIDEBAR_WIDTH) {
-          config.sidebarWidth = NARROW_SIDEBAR_WIDTH;
+          config.salesSidebarWidth = MIN_SIDEBAR_WIDTH;
         } else {
-          config.sidebarWidth = nextWidth;
+          config.salesSidebarWidth = nextWidth;
         }
       });
     };
 
     const handleDragEnd = () => {
-      // In useRef the data is non-responsive, so `config.sidebarWidth` can't get the dynamic sidebarWidth
+      // In useRef the data is non-responsive, so `config.salesSidebarWidth` can't get the dynamic sidebarWidth
       window.removeEventListener("pointermove", handleDragMove);
       window.removeEventListener("pointerup", handleDragEnd);
 
@@ -121,15 +123,15 @@ function useDragSideBar() {
 
   const isMobileScreen = useMobileScreen();
   const shouldNarrow =
-    !isMobileScreen && config.sidebarWidth < MIN_SIDEBAR_WIDTH;
+    !isMobileScreen && config.salesSidebarWidth < MIN_SIDEBAR_WIDTH;
 
   useEffect(() => {
     const barWidth = shouldNarrow
       ? NARROW_SIDEBAR_WIDTH
-      : limit(config.sidebarWidth ?? DEFAULT_SIDEBAR_WIDTH);
+      : limit(config.salesSidebarWidth ?? DEFAULT_SIDEBAR_WIDTH);
     const sideBarWidth = isMobileScreen ? "100vw" : `${barWidth}px`;
     document.documentElement.style.setProperty("--sidebar-width", sideBarWidth);
-  }, [config.sidebarWidth, isMobileScreen, shouldNarrow]);
+  }, [config.salesSidebarWidth, isMobileScreen, shouldNarrow]);
 
   return {
     onDragStart,
@@ -163,9 +165,7 @@ export function SalesSidebar(props: SidebarProps) {
 
   return (
     <div
-      className={`${styles.sidebar} ${props.className} ${
-        shouldNarrow && styles["narrow-sidebar"]
-      }`}
+      className={`${styles.sidebar} ${props.className}`}
       style={{
         // #3016 disable transition on ios mobile screen
         transition: isMobileScreen && isIOSMobile ? "none" : undefined,
@@ -182,19 +182,6 @@ export function SalesSidebar(props: SidebarProps) {
       </div>
 
       <div className={styles["sidebar-body"]}>{props.children}</div>
-
-      <div className={styles["sidebar-tail"]}>
-        <div className={styles["sidebar-actions"]}>
-          <div className={styles["sidebar-action"] + " " + styles.mobile}>
-            <IconButton
-              icon={<ChatIcon />}
-              onClick={() => {
-                navigate(Path.Home, { state: { fromHome: false } });
-              }}
-            />
-          </div>
-        </div>
-      </div>
 
       <div
         className={styles["sidebar-drag"]}
