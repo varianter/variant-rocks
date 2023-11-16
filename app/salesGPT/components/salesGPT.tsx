@@ -14,6 +14,7 @@ import { SalesSidebar } from "./sales-sidebar";
 import { Path } from "../../constant";
 import ChatIcon from "../../icons/chat.svg";
 import HelpSelect from "./helpSelect";
+import "../styles.scss";
 
 function _SalesGPT() {
   const router = useRouter();
@@ -142,7 +143,10 @@ function _SalesGPT() {
         />
       </SalesSidebar>
 
-      <div style={{ overflow: "auto" }} className={styles["window-content"]}>
+      <div
+        style={{ overflow: "auto" }}
+        className={styles["window-content"] + " " + styles["right-pane"]}
+      >
         <EmployeeCVSummary
           isLoading={isAnalysisLoading}
           employee={selectedEmployee}

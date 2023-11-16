@@ -469,6 +469,7 @@ const cn = {
       Empty: "Do an analysis to get a consise summary of the employee",
     },
     Consultant: "Consultant",
+    ResultTitle: "Summary from SalesGPT",
   },
 };
 

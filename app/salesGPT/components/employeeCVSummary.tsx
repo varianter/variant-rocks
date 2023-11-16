@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import styles from "../components/employeeCVSummary.module.scss";
-import CV from "./CV";
 import { EmployeeItem } from "../types";
 import { Loading } from "@/app/components/chatHomepage";
 import Locale from "../../locales";
@@ -13,26 +12,7 @@ type EmployeeCVSummaryProps = {
   generatedText: string;
 };
 
-function _EmployeeCVSummary({
-  employee,
-  isLoading,
-  generatedText,
-}: EmployeeCVSummaryProps) {
-  if (isLoading) {
-    return <Loading noLogo />;
-  }
-
-  return (
-    <div>
-      <p>
-        {Locale.SalesGPT.Consultant}: {employee?.name}
-      </p>
-      <CV GPTResponse={generatedText}></CV>
-    </div>
-  );
-}
-
-function _EmptyEmployeeSummary() {
+function EmptyEmployeeSummary() {
   return (
     <div className={styles["empty"]}>
       <div className={styles["content-box"]}>
@@ -45,6 +25,29 @@ function _EmptyEmployeeSummary() {
   );
 }
 
+function _EmployeeCVSummary({
+  employee,
+  isLoading,
+  generatedText,
+}: EmployeeCVSummaryProps) {
+  if (isLoading) {
+    return <Loading noLogo />;
+  }
+
+  if (employee && generatedText) {
+    return (
+      <div className={styles["results"]}>
+        <p className={styles["title"]}>{Locale.SalesGPT.ResultTitle}</p>
+        <div className={styles["content"]}>
+          <div className={styles["text"]}>{generatedText}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return <EmptyEmployeeSummary />;
+}
+
 export default function EmployeeCVSummary({
   employee,
   isLoading,
@@ -54,15 +57,11 @@ export default function EmployeeCVSummary({
     <ErrorBoundary
       fallback={<p> Something went wrong with the EmployeeCV! </p>}
     >
-      {employee ? (
-        <_EmployeeCVSummary
-          isLoading={isLoading}
-          employee={employee}
-          generatedText={generatedText}
-        />
-      ) : (
-        <_EmptyEmployeeSummary />
-      )}
+      <_EmployeeCVSummary
+        isLoading={isLoading}
+        employee={employee}
+        generatedText={generatedText}
+      />
     </ErrorBoundary>
   );
 }

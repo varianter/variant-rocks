@@ -176,6 +176,7 @@ const no: PartialLocaleType = {
         "Hva gjør egentlig SalgsGPT? Putt noe smart tekst her for å forklare",
     },
     Consultant: "Konsulent",
+    ResultTitle: "Spisset sammendrag fra SalgsGPT",
   },
 };
 
