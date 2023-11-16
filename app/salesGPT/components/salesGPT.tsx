@@ -1,22 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Select, { SingleValue } from "react-select";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { EmployeeItem, EmployeeOption } from "../salesGPT/types";
+import { EmployeeItem } from "../types";
 import EmployeeCVSummary from "./employeeCVSummary";
-import { ErrorBoundary } from "./error";
-import LayoutWrapper from "./layoutWrapper";
-import { aliasFromEmail } from "../utils";
-import { Settings } from "./settings";
+import { ErrorBoundary } from "../../components/error";
+import { aliasFromEmail } from "../../utils";
 import styles from "../components/salesGPT.module.scss";
 import { useLocation, useNavigate } from "react-router-dom";
-import Locale from "../locales";
+import Locale from "../../locales";
 import EmployeeSelect from "./employeeSelect";
-import { Sidebar } from "./sidebar";
-import { IconButton } from "./button";
+import { IconButton } from "../../components/button";
 import { SalesSidebar } from "./sales-sidebar";
-import { Path } from "../constant";
-import ChatIcon from "../icons/chat.svg";
+import { Path } from "../../constant";
+import ChatIcon from "../../icons/chat.svg";
 
 function _SalesGPT() {
   const router = useRouter();

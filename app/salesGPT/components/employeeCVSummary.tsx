@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { ErrorBoundary } from "./error";
-import { Loading } from "./chatHomepage";
+import { ErrorBoundary } from "../../components/error";
+import { Loading } from "../../components/chatHomepage";
 import styles from "../components/employeeCVSummary.module.scss";
 import CV from "./CV";
-import { EmployeeItem } from "../salesGPT/types";
-import { aliasFromEmail } from "../utils";
-import Locale from "../locales";
+import { EmployeeItem } from "../types";
+import { aliasFromEmail } from "../../utils";
+import Locale from "../../locales";
 
 type EmployeeCVSummaryProps = {
   employee: EmployeeItem | undefined;

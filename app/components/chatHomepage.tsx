@@ -29,7 +29,7 @@ import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { api } from "../client/api";
 import { useAccessStore } from "../store";
-import SalesGPT from "./salesGPT";
+import SalesGPT from "../salesGPT/components/salesGPT";
 import { Outlet } from "react-router-dom";
 
 export function Loading(props: { noLogo?: boolean }) {

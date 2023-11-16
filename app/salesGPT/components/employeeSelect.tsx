@@ -5,10 +5,10 @@ import Select, {
   OptionProps,
   SingleValueProps,
 } from "react-select";
-import { EmployeeItem, EmployeeOption } from "../salesGPT/types";
+import { EmployeeItem, EmployeeOption } from "../types";
 import { useState } from "react";
-import Locale from "../locales";
-import SearchIcon from "../icons/search.svg";
+import Locale from "../../locales";
+import SearchIcon from "../../icons/search.svg";
 import styles from "./employeeSelect.module.scss";
 
 interface SelectProps {

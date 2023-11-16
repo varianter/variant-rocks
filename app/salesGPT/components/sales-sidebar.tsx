@@ -1,37 +1,24 @@
 "use client";
 import { useEffect, useRef, useMemo } from "react";
 
-import styles from "./chatHomepage.module.scss";
+import styles from "../../components/chatHomepage.module.scss";
 
-import { IconButton } from "./button";
-import SettingsIcon from "../icons/settings.svg";
-import GithubIcon from "../icons/github.svg";
-import VariantGptIcon from "../icons/robotgpt.svg";
-import ChatIcon from "../icons/chat.svg";
-import AddIcon from "../icons/add.svg";
-import DeleteIcon from "../icons/delete.svg";
-import MaskIcon from "../icons/mask.svg";
-import PluginIcon from "../icons/plugin.svg";
-import DragIcon from "../icons/drag.svg";
-import { usePathname, useSearchParams } from "next/navigation";
+import VariantGptIcon from "../../icons/robotgpt.svg";
+import DragIcon from "../../icons/drag.svg";
+import { usePathname } from "next/navigation";
 
-import Locale from "../locales";
-
-import { useAppConfig, useChatStore } from "../store";
+import { useAppConfig, useChatStore } from "../../store";
 
 import {
   DEFAULT_SALES_SIDEBAR_WIDTH as DEFAULT_SIDEBAR_WIDTH,
   MAX_SALES_SIDEBAR_WIDTH as MAX_SIDEBAR_WIDTH,
   MIN_SALES_SIDEBAR_WIDTH as MIN_SIDEBAR_WIDTH,
   NARROW_SALES_SIDEBAR_WIDTH as NARROW_SIDEBAR_WIDTH,
-  Path,
-  REPO_URL,
-} from "../constant";
+} from "../../constant";
 
-import { Link, useNavigate } from "react-router-dom";
-import { isIOS, useMobileScreen } from "../utils";
+import { useNavigate } from "react-router-dom";
+import { isIOS, useMobileScreen } from "../../utils";
 import dynamic from "next/dynamic";
-import { showConfirm, showToast } from "./ui-lib";
 
 interface SidebarProps {
   title: string;
@@ -40,9 +27,12 @@ interface SidebarProps {
   children?: React.ReactNode;
 }
 
-const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
-  loading: () => null,
-});
+const ChatList = dynamic(
+  async () => (await import("../../components/chat-list")).ChatList,
+  {
+    loading: () => null,
+  },
+);
 
 function useHotKey() {
   const chatStore = useChatStore();
