@@ -1,12 +1,23 @@
-import Select, { StylesConfig } from "react-select";
+import Select, {
+  StylesConfig,
+  components,
+  SingleValueProps,
+} from "react-select";
 import { HelpOption } from "../types";
 import { Dispatch, SetStateAction } from "react";
+import Locale from "../../locales";
 
 interface SelectProps {
   options: HelpOption[];
   selectedHelp: HelpOption | undefined;
   handleSelectHelp: Dispatch<SetStateAction<HelpOption>>;
 }
+const SingleValue = ({ children, ...props }: SingleValueProps<HelpOption>) => (
+  <components.SingleValue {...props}>
+    <span style={{ fontWeight: 600 }}>{children}</span>
+    <span>{Locale.SalesGPT.Help.MoreToCome}</span>
+  </components.SingleValue>
+);
 
 const selectStyles: StylesConfig<HelpOption> = {
   placeholder: (styles) => ({
@@ -39,6 +50,9 @@ function HelpSelect({ options, selectedHelp, handleSelectHelp }: SelectProps) {
       id="choose-help"
       isClearable={false}
       styles={selectStyles}
+      components={{
+        SingleValue,
+      }}
     />
   );
 }

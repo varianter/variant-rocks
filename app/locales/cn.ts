@@ -455,6 +455,7 @@ const cn = {
     Help: {
       Choose: "What do you need help with?",
       Summary: "Create a better summary",
+      MoreToCome: " (more to come!)",
     },
     ChooseEmployee: "Choose employee",
     SelectPlaceholder: "What employee do you want to get the CV for?",

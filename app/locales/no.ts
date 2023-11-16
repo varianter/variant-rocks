@@ -161,6 +161,7 @@ const no: PartialLocaleType = {
     Help: {
       Choose: "Hva trenger du hjelp til?",
       Summary: "Spisse sammendrag",
+      MoreToCome: " (mer kommer!)",
     },
     ChooseEmployee: "Velg ansatt",
     SelectPlaceholder: "Hvilken ansatt vil du hente CV-en til?",
@@ -171,7 +172,8 @@ const no: PartialLocaleType = {
     SummaryPlaceholder: "Kopier inn sammendrag om den ansatte",
     Analyse: "Analyser",
     EmployeeCVSummary: {
-      Empty: "Gjennomfør analyse for å få et spisset sammendrag",
+      Empty:
+        "Hva gjør egentlig SalgsGPT? Putt noe smart tekst her for å forklare",
     },
     Consultant: "Konsulent",
   },
