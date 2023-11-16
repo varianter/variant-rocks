@@ -59,7 +59,7 @@ export const ALL_LANG_OPTIONS: Record<Lang, string> = {
   vi: "Tiếng Việt",
   ru: "Русский",
   cs: "Čeština",
-  no: "Nynorsk",
+  no: "Norsk",
   ar: "العربية",
   bn: "বাংলা",
 };
