@@ -12,6 +12,10 @@ import styles from "../components/salesGPT.module.scss";
 import { useLocation } from "react-router-dom";
 import Locale from "../locales";
 import EmployeeSelect from "./employeeSelect";
+import { Sidebar } from "./sidebar";
+import { IconButton } from "./button";
+import { SalesSidebar } from "./sidebar-sales";
+//import globalStyles from "./chatHomepage.module.scss";
 
 function _SalesGPT() {
   const router = useRouter();
@@ -78,36 +82,94 @@ function _SalesGPT() {
       });
   }, []);
 
+  const [requirementText, setRequirementText] = useState("");
+  const [summaryText, setSummaryText] = useState("");
+  const [generatedText, setGeneratedText] = useState("");
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+
+  async function handleAnalyseButtonClick(): Promise<void> {
+    setIsAnalysisLoading(true);
+    const requirements = requirementText.split("\n").filter((s) => s.length);
+    const employeeAlias = aliasFromEmail(selectedEmployee?.email);
+    await fetch("/api/chewbacca/generateSummaryOfQualifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ employeeAlias, requirements }),
+    })
+      .then(async (response) => {
+        if (response.status === 401) {
+          window.location.href = "/api/auth/signin";
+        }
+        return await response.json();
+      })
+      .then((data) => {
+        setGeneratedText(data);
+        setIsAnalysisLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setIsAnalysisLoading(false);
+      });
+  }
+
   return (
-    <LayoutWrapper>
-      {/* <Select
-        options={options}
-        isSearchable={true}
-        value={selectedOption}
-        onChange={handleSelectEmployee}
-      /> */}
-      <label htmlFor="choose-employee">{Locale.SalesGPT.ChooseEmployee}</label>
-      <EmployeeSelect
-        // id="choose-employee"
-        employees={employees}
-        selectedEmployee={selectedEmployee}
-        handleSelectEmployee={handleSelectEmployee}
-      />
+    <div className={styles.container}>
+      <SalesSidebar title={title} subtitle={""}>
+        <div className={styles["sidebar-content"]}>
+          <div className={styles["input-field"]}>
+            <label htmlFor="choose-employee">
+              {Locale.SalesGPT.ChooseEmployee}
+            </label>
+            <EmployeeSelect
+              employees={employees}
+              selectedEmployee={selectedEmployee}
+              handleSelectEmployee={handleSelectEmployee}
+            />
+          </div>
+          <div className={styles["input-field"]}>
+            <label htmlFor="requirements">{Locale.SalesGPT.Requirements}</label>
+            <textarea
+              id="requirements"
+              className={styles["text-input"]}
+              placeholder={Locale.SalesGPT.RequirementsPlaceholder}
+              // value={requirementText}
+              // onChange={(event) => setRequirementText(event.target.value)}
+            ></textarea>
+          </div>
+          <div className={styles["input-field"]}>
+            <label htmlFor="summary">{Locale.SalesGPT.Summary}</label>
+            <textarea
+              id="summary"
+              className={styles["text-input"]}
+              placeholder={Locale.SalesGPT.SummaryPlaceholder}
+              // value={summaryText}
+              // onChange={(event) => setSummaryText(event.target.value)}
+            ></textarea>
+          </div>
+          <div className={styles["analyse-button-container"]}>
+            <IconButton
+              key="analyse"
+              bordered
+              icon={<span></span>}
+              className={styles["analyse-button"]}
+              text={Locale.SalesGPT.Analyse}
+              onClick={handleAnalyseButtonClick}
+            />
+          </div>
+        </div>
+      </SalesSidebar>
 
       <div style={{ overflow: "auto" }} className={styles["window-content"]}>
-        {openSettings ? (
-          <Settings />
-        ) : (
-          // Her kan man bytte ut vindu avhengig av valgt funksjon på sikt
-          <EmployeeCVSummary employee={selectedEmployee} />
-        )}
+        <EmployeeCVSummary
+          isLoading={isAnalysisLoading}
+          employee={selectedEmployee}
+          generatedText={generatedText}
+        />
       </div>
-    </LayoutWrapper>
+    </div>
   );
-}
-
-interface SalesGPTProps {
-  employees: EmployeeItem[];
 }
 
 export default function SalesGPT() {

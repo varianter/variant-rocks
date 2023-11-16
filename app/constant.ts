@@ -19,7 +19,7 @@ export enum Path {
   NewChat = "/new-chat",
   Masks = "/masks",
   Auth = "/auth",
-  // TODO: Add SalesGPT path
+  SalesGPT = "/salesgpt",
 }
 
 export enum ApiPath {
