@@ -19,12 +19,11 @@ import { IconButton } from "../../components/button";
 import { SalesSidebar } from "./sales-sidebar";
 import { Path } from "../../constant";
 import ChatIcon from "../../icons/chat.svg";
-import MaxIcon from "../../icons/max.svg";
-import MinIcon from "../../icons/min.svg";
 import HelpSelect from "./helpSelect";
 import { useAppConfig } from "../../store";
 import SalesGPTExplanation from "./salesGPTExplanation";
 import { RequirementResponse } from "@/app/api/chewbacca/generateRequirementResponse/route";
+import RightPane from "./rightPane";
 
 const availableHelp: HelpOption[] = [
   {
@@ -237,47 +236,20 @@ function _SalesGPT() {
         />
       </SalesSidebar>
 
-      <div
-        style={{ overflow: "auto" }}
-        className={styles["window-content"] + " " + styles["right-pane"]}
-      >
-        <div className={styles["window-header"]} data-tauri-drag-region>
-          <div className={`window-header-title ${styles["chat-body-title"]}`}>
-            <div
-              className={`window-header-main-title ${styles["chat-body-main-title"]}`}
-            >
-              {getRightPaneTitle()}
-            </div>
-          </div>
-          <div className={styles["window-actions"]}>
-            <div className={styles["window-action-button"]}>
-              <IconButton
-                icon={config.tightBorder ? <MinIcon /> : <MaxIcon />}
-                bordered
-                onClick={() => {
-                  config.update(
-                    (config) => (config.tightBorder = !config.tightBorder),
-                  );
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        <div className={styles["chat-body"]}>
-          {/* TODO: Gjør dette på en bedre måtte. Dette er ikke bra */}
-          {isAnalysisLoading ? (
-            <Loading noLogo />
-          ) : showCVSummary ? (
-            <EmployeeCVSummary
-              employee={selectedEmployee}
-              generatedText={generatedText}
-              requirementResponse={requirementResponse}
-            />
-          ) : (
-            <SalesGPTExplanation />
-          )}
-        </div>
-      </div>
+      <RightPane title={getRightPaneTitle()}>
+        {/* TODO: Gjør dette på en bedre måtte. Dette er ikke bra */}
+        {isAnalysisLoading ? (
+          <Loading noLogo />
+        ) : showCVSummary ? (
+          <EmployeeCVSummary
+            employee={selectedEmployee}
+            generatedText={generatedText}
+            requirementResponse={requirementResponse}
+          />
+        ) : (
+          <SalesGPTExplanation />
+        )}
+      </RightPane>
     </div>
   );
 }
