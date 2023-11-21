@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 // import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/app/components/chatHomepage";
-import { EmployeeItem, HelpOption } from "../types";
+import { EmployeeItem, HelpOption, HelpOptionValue } from "../types";
 import EmployeeCVSummary from "./employeeCVSummary";
 import { ErrorBoundary } from "../../components/error";
 import {
@@ -29,7 +29,11 @@ import { RequirementResponse } from "@/app/api/chewbacca/generateRequirementResp
 const availableHelp: HelpOption[] = [
   {
     label: Locale.SalesGPT.Help.Summary,
-    value: "summary",
+    value: HelpOptionValue.Summary,
+  },
+  {
+    label: Locale.SalesGPT.Help.RequirementList,
+    value: HelpOptionValue.RequirementList,
   },
 ];
 
@@ -58,7 +62,9 @@ function _SalesGPT() {
   const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
-  const [selectedHelp, setSelectedHelp] = useState(availableHelp[0]);
+  const [selectedHelp, setSelectedHelp] = useState<HelpOption | undefined>(
+    undefined,
+  );
 
   function handleSelectEmployee(newValue: EmployeeItem | undefined): void {
     setSelectedEmployee(newValue);
@@ -155,6 +161,17 @@ function _SalesGPT() {
       });
   }
 
+  function getRightPaneTitle() {
+    switch (selectedHelp?.value) {
+      case HelpOptionValue.Summary:
+        return Locale.SalesGPT.EmployeeCVSummary.Title;
+      case HelpOptionValue.RequirementList:
+        return Locale.SalesGPT.RequirementList.Title;
+      default:
+        return "";
+    }
+  }
+
   return (
     <div
       className={
@@ -229,7 +246,7 @@ function _SalesGPT() {
             <div
               className={`window-header-main-title ${styles["chat-body-main-title"]}`}
             >
-              {selectedHelp.value === "summary" && Locale.SalesGPT.ResultTitle}
+              {getRightPaneTitle()}
             </div>
           </div>
           <div className={styles["window-actions"]}>
