@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Loading } from "@/app/components/chatHomepage";
 import { EmployeeItem, HelpOption, HelpOptionValue } from "../types";
 import EmployeeCVSummary from "./employeeCVSummary";
@@ -24,6 +23,7 @@ import { useAppConfig } from "../../store";
 import SalesGPTExplanation from "./salesGPTExplanation";
 import { RequirementResponse } from "@/app/api/chewbacca/generateRequirementResponse/route";
 import RightPane from "./rightPane";
+import RequirementsList from "./requirementsList";
 
 const availableHelp: HelpOption[] = [
   {
@@ -65,6 +65,9 @@ function _SalesGPT() {
     undefined,
   );
 
+  const [showCVSummary, setShowCVSummary] = useState(false);
+  const [showRequirementsList, setShowRequirementsList] = useState(false);
+
   function handleSelectEmployee(newValue: EmployeeItem | undefined): void {
     setSelectedEmployee(newValue);
     // TODO: Handle query params later
@@ -80,6 +83,9 @@ function _SalesGPT() {
   // TODO: Dette er dårlig. Men skal fikses senere
   function handleClearSelectedEmployee() {
     setGeneratedText(null);
+    setShowCVSummary(false);
+    setShowRequirementsList(false);
+    setIsAnalysisLoading(false);
   }
 
   useEffect(() => {
@@ -98,12 +104,6 @@ function _SalesGPT() {
         console.log(error);
       });
   }, []);
-
-  const [showCVSummary, setshowCVSummary] = useState(false);
-
-  useEffect(() => {
-    setshowCVSummary(generatedText != null && !isAnalysisLoading);
-  }, [isAnalysisLoading, generatedText]);
 
   const fetchRequirements = async (
     employeeAlias: string,
@@ -128,15 +128,13 @@ function _SalesGPT() {
     return requirementResponses;
   };
 
-  async function handleAnalyseButtonClick(): Promise<void> {
-    setIsAnalysisLoading(true);
-    setRequirementResponse([]);
-    const requirements = requirementText.split("\n").filter((s) => s.length);
-    const employeeAlias = aliasFromEmail(selectedEmployee?.email);
-
+  const runSummaryAnalysis = async (
+    employeeAlias: string,
+    requirements: string[],
+    summaryText: string,
+  ) => {
     await fetchRequirements(employeeAlias, requirements)
       .then(async (requirementResponses) => {
-        setRequirementResponse(requirementResponses);
         const response = await fetch(
           "/api/chewbacca/generateSummaryOfQualifications",
           {
@@ -152,12 +150,60 @@ function _SalesGPT() {
       })
       .then((data) => {
         setGeneratedText(data);
+        setShowCVSummary(true);
+
+        setRequirementResponse([]);
         setIsAnalysisLoading(false);
+        setShowRequirementsList(false);
       })
       .catch((error) => {
         console.error("Error:", error);
+        setRequirementResponse([]);
+        setGeneratedText(null);
         setIsAnalysisLoading(false);
+        setShowRequirementsList(false);
+        setShowCVSummary(false);
+        return;
       });
+  };
+
+  const runRequirementListAnalysis = async (
+    employeeAlias: string,
+    requirements: string[],
+  ) => {
+    await fetchRequirements(employeeAlias, requirements)
+      .then((data) => {
+        setRequirementResponse(data);
+        setShowRequirementsList(true);
+
+        setGeneratedText(null);
+        setIsAnalysisLoading(false);
+        setShowCVSummary(false);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setRequirementResponse([]);
+        setGeneratedText(null);
+        setIsAnalysisLoading(false);
+        setShowRequirementsList(false);
+        setShowCVSummary(false);
+        return;
+      });
+  };
+
+  async function handleAnalyseButtonClick(): Promise<void> {
+    setIsAnalysisLoading(true);
+    setRequirementResponse([]);
+    const requirements = requirementText.split("\n").filter((s) => s.length);
+    const employeeAlias = aliasFromEmail(selectedEmployee?.email);
+
+    if (selectedHelp?.value == HelpOptionValue.RequirementList) {
+      await runRequirementListAnalysis(employeeAlias, requirements);
+    } else if (selectedHelp?.value == HelpOptionValue.Summary) {
+      await runSummaryAnalysis(employeeAlias, requirements, summaryText);
+    } else {
+      return;
+    }
   }
 
   function getRightPaneTitle() {
@@ -244,8 +290,9 @@ function _SalesGPT() {
           <EmployeeCVSummary
             employee={selectedEmployee}
             generatedText={generatedText}
-            requirementResponse={requirementResponse}
           />
+        ) : showRequirementsList ? (
+          <RequirementsList requirementResponse={requirementResponse} />
         ) : (
           <SalesGPTExplanation />
         )}
