@@ -21,13 +21,11 @@ import ChatIcon from "../../icons/chat.svg";
 import HelpSelect from "./helpSelect";
 import { useAppConfig, useChatStore } from "../../store";
 import SalesGPTExplanation from "./salesGPTExplanation";
-import {
-  RequirementResponse,
-  projectExperienceToText,
-} from "@/app/api/chewbacca/generateRequirementResponse/route";
+import { RequirementResponse } from "@/app/api/chewbacca/generateRequirementResponse/route";
 import RightPane from "./rightPane";
 import RequirementsList from "./requirementsList";
 import { SALES_GPT_MASK } from "@/app/masks/no";
+import { projectExperienceToText } from "@/app/function/ProjectExperienceToText";
 
 const availableHelp: HelpOption[] = [
   {

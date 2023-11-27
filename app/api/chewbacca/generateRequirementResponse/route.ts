@@ -4,6 +4,7 @@ import { authOptions } from "../../auth/auth-options";
 import { CustomSession } from "../../auth/[...nextauth]/typing";
 import { ChatCompletionRequestMessage } from "openai";
 import { requestOpenai } from "@/app/function/CallGptWithoutReactContext";
+import { projectExperienceToText } from "@/app/function/ProjectExperienceToText";
 
 export type RequirementResponse = {
   requirement: string;
@@ -212,15 +213,6 @@ async function findRelevantProjectForCompetencies(
     return Promise.resolve(undefined);
   }
   return (await request.json()) as ProjectExperienceResponse;
-}
-
-export function projectExperienceToText(
-  projectExperience: ProjectExperience,
-): string {
-  let roleText = projectExperience.roles
-    .map((role) => role.title + ":" + role.description)
-    .join(",");
-  return `${projectExperience.title},${projectExperience.customer},${projectExperience.description},${roleText}`;
 }
 
 function monthsExperienceToYears(months: number): number | null {
