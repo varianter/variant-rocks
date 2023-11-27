@@ -9,6 +9,7 @@ export type RequirementResponse = {
   requirement: string;
   response: string;
   experience: string;
+  projects: ProjectExperience[];
 };
 
 type RequirementCompetency = {
@@ -20,7 +21,7 @@ type ProjectExperienceResponse = {
   projects: ProjectExperience[];
   monthsOfExperience: number;
 };
-type ProjectExperience = {
+export type ProjectExperience = {
   id: string;
   title: string;
   description: string;
@@ -161,6 +162,7 @@ async function generateRequirementResponse(
       requirement: requirement.requirement,
       response: "",
       experience: "ingen erfaring",
+      projects: [],
     };
   }
   const prompt: string = `bruk tabellen under og svar på kravet. 
@@ -186,6 +188,7 @@ async function generateRequirementResponse(
     requirement: requirement.requirement,
     response: response,
     experience: experience,
+    projects: relevantProjects,
   };
 }
 
@@ -211,7 +214,9 @@ async function findRelevantProjectForCompetencies(
   return (await request.json()) as ProjectExperienceResponse;
 }
 
-function projectExperienceToText(projectExperience: ProjectExperience): string {
+export function projectExperienceToText(
+  projectExperience: ProjectExperience,
+): string {
   let roleText = projectExperience.roles
     .map((role) => role.title + ":" + role.description)
     .join(",");
