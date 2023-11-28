@@ -69,6 +69,7 @@ function _SalesGPT() {
 
   const [showCVSummary, setShowCVSummary] = useState(false);
   const [showRequirementsList, setShowRequirementsList] = useState(false);
+  const [concise, setConcise] = useState(false);
 
   function handleSelectEmployee(newValue: EmployeeItem | undefined): void {
     setSelectedEmployee(newValue);
@@ -112,6 +113,7 @@ function _SalesGPT() {
     requirements: string[],
   ): Promise<RequirementResponse[]> => {
     const requirementPromises = requirements.map(async (requirement) => {
+      const name = getFirstName(selectedEmployee?.name ?? "");
       const response = await fetch(
         "/api/chewbacca/generateRequirementResponse",
         {
@@ -119,7 +121,7 @@ function _SalesGPT() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ employeeAlias, requirement }),
+          body: JSON.stringify({ employeeAlias, requirement, name, concise }),
         },
       );
       const data = await response.json();
@@ -130,6 +132,10 @@ function _SalesGPT() {
     return requirementResponses;
   };
 
+  function getFirstName(name: string): string {
+    return name.split(" ")[0];
+  }
+
   const runSummaryAnalysis = async (
     employeeAlias: string,
     requirements: string[],
@@ -138,6 +144,7 @@ function _SalesGPT() {
     await fetchRequirements(employeeAlias, requirements)
       .then(async (requirementResponses) => {
         setRequirementResponse(requirementResponses);
+        const name = getFirstName(selectedEmployee?.name ?? "");
         const response = await fetch(
           "/api/chewbacca/generateSummaryOfQualifications",
           {
@@ -145,7 +152,7 @@ function _SalesGPT() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ requirementResponses, summaryText }),
+            body: JSON.stringify({ requirementResponses, summaryText, name }),
           },
         );
         const data = await response.json();
@@ -217,9 +224,9 @@ function _SalesGPT() {
     useChatStore.getState().currentSession().messages = [
       {
         role: "user",
-        content: `Bruk prosjektene til å lage et sammendrag av erfaringene til ${selectedEmployee?.name} ${projects
-          .map(projectExperienceToText)
-          .join("\n")}`,
+        content: `Bruk prosjektene til å lage et sammendrag av erfaringene til ${selectedEmployee?.name}
+        prosjektnavn,kundenavn,beskrivelse,rolle\n 
+        ${projects.map(projectExperienceToText).join("\n")}`,
         id: `${id++}`,
         date: new Date().toDateString(),
       },
@@ -291,6 +298,17 @@ function _SalesGPT() {
               value={summaryText}
               onChange={(event) => setSummaryText(event.target.value)}
             ></textarea>
+          </div>
+          <div className={styles["input-field"]}>
+            <label htmlFor="concise-answer">
+              {Locale.SalesGPT.ConciseOption}
+            </label>
+            <input
+              type="checkbox"
+              id="concise-answer"
+              checked={concise}
+              onChange={(event) => setConcise(event.target.checked)}
+            />
           </div>
           <div className={styles["analyse-button-container"]}>
             <IconButton
