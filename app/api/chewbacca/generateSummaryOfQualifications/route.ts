@@ -8,12 +8,13 @@ export const POST = async (
   req: NextRequest,
   res: NextResponse,
 ): Promise<Response> => {
-  const { requirementResponses, summaryText } = await req.json();
+  const { requirementResponses, summaryText, name } = await req.json();
 
   const result =
     (await generateSummaryOfQualifications(
       requirementResponses,
       summaryText,
+      name,
     )) ?? "";
 
   return new Response(JSON.stringify(result), { status: 200 });
@@ -22,20 +23,23 @@ export const POST = async (
 async function generateSummaryOfQualifications(
   requirementResponses: RequirementResponse[],
   summaryText: string | undefined,
+  name: string,
 ): Promise<string | undefined> {
   return await generateSummaryFromRequirementResponses(
     requirementResponses,
     summaryText,
+    name,
   );
 }
 
 function findSummaryPrompt(
   requirementResponses: RequirementResponse[],
   summaryText: string | undefined,
+  name: string,
 ) {
   const table = requirementResponsesToTable(requirementResponses);
   if (summaryText) {
-    return `Vi har nå fått en krav-begrunnelse tabell ${table}.
+    return `Vi har nå fått en krav-begrunnelse tabellen som ${name} må oppfylle ${table}.
     Her er det gamle sammendraget ${summaryText}.
     Skriv om sammendraget slik at den svarer på alle krav
     med begrunnelesen i tabellen. Bruk alt i tabellen og sammendraget.
@@ -49,9 +53,10 @@ function findSummaryPrompt(
     Du kan ikke regne med at brukeren har lest krav-begrunnelse tabellen.
     `;
   }
-  return `Her er krav-begrunnelse tabellen. Lag et sammendrag av konsulentens 
+  return `Her er krav-begrunnelse tabellen. Lag et sammendrag av ${name} sin
   erfaring som svarer på kravene. Sammendraget bør være langt. 
   Husk å referer til navn på prosjekt, kunde og års erfaring for hvert krav i sammendraget.
+ Sammendraget  må flyte naturlig og sammenhengende så den scorer høyt i salg.
   Husk å inkludere alle rader ifra tabellen i svaret.
   Det kan hende at samme prosjekt er brukt i de ulike begrunnelsene.
   Ikke bruk noe som ikke står i tabllen i ditt sammendrag.
@@ -62,8 +67,9 @@ function findSummaryPrompt(
 async function generateSummaryFromRequirementResponses(
   requirementResponses: RequirementResponse[],
   summaryText: string | undefined,
+  name: string,
 ): Promise<string> {
-  const prompt = findSummaryPrompt(requirementResponses, summaryText);
+  const prompt = findSummaryPrompt(requirementResponses, summaryText, name);
   const summary = await requestOpenai(
     [{ role: "user", content: prompt }],
     "variant-rocks-turbo-16k",

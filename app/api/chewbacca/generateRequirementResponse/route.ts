@@ -47,7 +47,7 @@ export const POST = async (
   req: NextRequest,
   res: NextResponse,
 ): Promise<Response> => {
-  const { employeeAlias, requirement } = await req.json();
+  const { employeeAlias, requirement, name, concise } = await req.json();
 
   const session = (await getServerSession(authOptions)) as CustomSession;
   if (
@@ -63,7 +63,13 @@ export const POST = async (
     return new Response(JSON.stringify({}), { status: 400 });
   }
 
-  const result = await generateRequirementResponse(rc, token, employeeAlias);
+  const result = await generateRequirementResponse(
+    rc,
+    token,
+    employeeAlias,
+    name,
+    concise,
+  );
 
   return new Response(JSON.stringify(result), { status: 200 });
 };
@@ -110,6 +116,11 @@ async function generateKeywordsFromRequirements(
 ): Promise<RequirementCompetency> {
   const example: ChatCompletionRequestMessage[] = [
     {
+      role: "system",
+      content:
+        "Det du skriver, skal brukes i et skript. Ikke diverger fra output-format. Bare bruk ord fra Nøkkelordliste i svaret.",
+    },
+    {
       role: "user",
       content:
         'Jeg har en nøkkelordliste : [JIRA,KUBERNETES,AZURE,GCP,AWS,JAVA,C#] svar hvilke nøkkelord som er relevant for kravet : "Kandidaten må være god på utvikling av skytjenester ". Svaret skal være en JSON liste som er et utvalg fra den nye nøkkelordlisten. Bare nøkkelord fra nøkkelordlisten kan bli med i svaret.',
@@ -146,6 +157,8 @@ async function generateRequirementResponse(
   requirement: RequirementCompetency,
   token: string,
   employeeAlias: string,
+  name: string,
+  concise: boolean,
 ): Promise<RequirementResponse> {
   const projectExperienceResponse = await findRelevantProjectForCompetencies(
     token,
@@ -166,25 +179,40 @@ async function generateRequirementResponse(
       projects: [],
     };
   }
-  const prompt: string = `bruk tabellen under og svar på kravet. 
+  const prompt: string = `bruk tabellen under og svar på hvordan ${name} møter kravet
     Prosjekt med prosjektnavn og kundenavn når du referer til prosjekt. 
     Bruk sitater som er relevant for kravet i teksten.
     Du kan ikke forvente at leser kjenner til tabellen.
     Du skal lage en sammenhengende tekst og ikke en tabell. 
     Argumenter best mulig hvordan prosjektene svarer mot kravet.
-    Ikke ta med informasjon som ikke er relevant for kravet.
       krav : ${
         requirement.requirement
-      } tabell med utvalgte prosjekt: prosjektnavn,kundenavn,beskrivelse,rolle\n   ${relevantProjects
+      } tabell med utvalgte prosjekt: prosjektnavn,kundenavn,beskrivelse,rollene til ${name}\n   ${relevantProjects
         ?.map(projectExperienceToText)
         .join("\n")}`;
   console.log(prompt);
-  const response = await requestOpenai(
+  let response = await requestOpenai(
     [{ role: "user", content: prompt }],
     "variant-rocks-turbo-16k",
     2000,
     0.75,
   );
+  if (concise) {
+    response = await requestOpenai(
+      [
+        {
+          role: "user",
+          content: `Ta utgangspunkt i følgende tekst "${response}" 
+          Kjøper er bare interessert i hvordan ${name} svarer mot kravet ${requirement.requirement}
+          For å styrke argumentet ditt så må du bare bruke relevant tekst i ditt argument.
+          `,
+        },
+      ],
+      "variant-rocks",
+      2000,
+      0,
+    );
+  }
   return {
     requirement: requirement.requirement,
     response: response,

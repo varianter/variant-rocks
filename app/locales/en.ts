@@ -466,6 +466,7 @@ const en: LocaleType = {
     ChooseEmployee: "Choose employee",
     SelectPlaceholder: "What employee do you want to get the CV for?",
     Requirements: "Requirements",
+    ConciseOption: "Answer requirements concisely",
     RequirementsPlaceholder:
       "The candidate must have experience with X\nThe candidate must have experience with Y\nExperience with Z is a plus",
     Summary: "Summary",
