@@ -1,7 +1,7 @@
 import { InputListValue } from "@/app/salesGPT/types";
 import styles from "./inputListItem.module.scss";
-import { IconButton } from "@/app/components/button";
 import CloseIcon from "../../../../icons/close.svg";
+import { SalesGPTIconButton } from "../../salesGPTIconButton";
 
 type ListInputProps = {
   InputListValue: InputListValue;
@@ -29,7 +29,7 @@ const ListInput = ({
         onChange={(e) => updateValue(InputListValue.index, e.target.value)}
       />
 
-      <IconButton
+      <SalesGPTIconButton
         role="button"
         className={styles["button-remove"]}
         icon={<CloseIcon />}

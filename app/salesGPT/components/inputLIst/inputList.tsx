@@ -1,9 +1,8 @@
 import styles from "./inputList.module.scss";
-import { IconButton } from "@/app/components/button";
 import AddIcon from "../../../icons/add.svg";
-import { useEffect } from "react";
 import { InputListValue } from "../../types";
 import InputListItem from "./inputListItem/inputListItem";
+import { SalesGPTIconButton } from "../salesGPTIconButton";
 
 type InputListProps = {
   inputListValues: InputListValue[];
@@ -55,7 +54,7 @@ const InputList = ({ inputListValues, setInputListValues }: InputListProps) => {
           />
         );
       })}
-      <IconButton
+      <SalesGPTIconButton
         role="button"
         className={styles["button-add"]}
         text={""}

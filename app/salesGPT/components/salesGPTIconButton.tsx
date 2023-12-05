@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import styles from "./button.module.scss";
+import styles from "../../components/button.module.scss";
 
 export type ButtonType = "primary" | "danger" | null;
 
-interface IconButtonProps {
+interface SalesGPTIconButtonProps {
   onClick?: () => void;
   icon?: JSX.Element;
   type?: ButtonType;
@@ -16,9 +16,10 @@ interface IconButtonProps {
   disabled?: boolean;
   tabIndex?: number;
   autoFocus?: boolean;
+  role?: "button" | "submit" | "reset" | undefined;
 }
 
-export function IconButton({
+export function SalesGPTIconButton({
   onClick,
   icon,
   type,
@@ -30,7 +31,8 @@ export function IconButton({
   disabled,
   tabIndex,
   autoFocus,
-}: IconButtonProps) {
+  role = "button",
+}: SalesGPTIconButtonProps) {
   return (
     <button
       className={
@@ -42,6 +44,7 @@ export function IconButton({
       onClick={onClick}
       title={title}
       disabled={disabled}
+      type={role}
       tabIndex={tabIndex}
       autoFocus={autoFocus}
     >

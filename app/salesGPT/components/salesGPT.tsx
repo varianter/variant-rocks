@@ -32,6 +32,7 @@ import RequirementsList from "./requirementsList";
 import { SALES_GPT_MASK } from "@/app/masks/no";
 import { projectExperienceToText } from "@/app/function/ProjectExperienceToText";
 import InputList from "./inputLIst/inputList";
+import { SalesGPTIconButton } from "./salesGPTIconButton";
 
 const availableHelp: HelpOption[] = [
   {
@@ -321,7 +322,7 @@ function _SalesGPT() {
               </div>
             )}
             <div className={styles["analyse-button-container"]}>
-              <IconButton
+              <SalesGPTIconButton
                 key="analyse"
                 bordered
                 className={styles["analyse-button"]}
