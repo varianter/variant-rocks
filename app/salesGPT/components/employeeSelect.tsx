@@ -76,6 +76,7 @@ function EmployeeSelect({
 
   return (
     <Select
+      required
       options={options}
       isSearchable={true}
       value={selectedOption}
