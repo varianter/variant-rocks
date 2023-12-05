@@ -8,13 +8,14 @@ export const POST = async (
   req: NextRequest,
   res: NextResponse,
 ): Promise<Response> => {
-  const { requirementResponses, summaryText, name } = await req.json();
+  const { requirementResponses, summaryText, name, gpt4 } = await req.json();
 
   const result =
     (await generateSummaryOfQualifications(
       requirementResponses,
       summaryText,
       name,
+      gpt4,
     )) ?? "";
 
   return new Response(JSON.stringify(result), { status: 200 });
@@ -68,14 +69,28 @@ async function generateSummaryFromRequirementResponses(
   requirementResponses: RequirementResponse[],
   summaryText: string | undefined,
   name: string,
+  gpt4: boolean,
 ): Promise<string> {
   const prompt = findSummaryPrompt(requirementResponses, summaryText, name);
-  const summary = await requestOpenai(
+  let summary = await requestOpenai(
     [{ role: "user", content: prompt }],
     "variant-rocks-turbo-16k",
     2000,
     1,
   );
+  if (gpt4) {
+    summary = await requestOpenai(
+      [
+        {
+          role: "user",
+          content: `Gjør teksten mer sammenhengende. Den skal ha en formell tone men fortsatt høres ut som et menneske`,
+        },
+      ],
+      "variant-rocks-gpt4",
+      2000,
+      1,
+    );
+  }
   return (
     summary ??
     "Feil: krav-begrunnelse tabllen ble for lang og GPT gikk over token limit"

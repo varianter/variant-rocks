@@ -84,4 +84,9 @@ if (mode !== "export") {
   };
 }
 
+if (process.env.NODE_ENV === 'development' && process.env.IGNORE_TLS) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
+
 export default nextConfig;

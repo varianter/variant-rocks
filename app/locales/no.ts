@@ -225,6 +225,9 @@ const no: PartialLocaleType = {
           "..og snart vil den også hjelpe deg med å fylle ut en kompetansematrise!",
       },
     },
+    EnableGpt4: "Finpuss svaret med GPT-4",
+    EnableGpt4Warning:
+      "Advarsel: Bruk av dette valget koster Variant 0,64 øre per krav",
     RequirementList: {
       Title: "Fyll ut kravliste",
     },

@@ -6,7 +6,7 @@ const AZURE_OPENAI_API_BASE = process.env.AZURE_OPENAI_API_BASE;
 
 export async function requestOpenai(
   input: ChatCompletionRequestMessage[],
-  deployment: ModelType,
+  deployment: ModelType | "variant-rocks-gpt4", //we don't want to export gpt 4 to the chat
   response_max_tokens: number,
   temperature: number,
 ) {

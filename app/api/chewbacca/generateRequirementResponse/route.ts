@@ -47,7 +47,7 @@ export const POST = async (
   req: NextRequest,
   res: NextResponse,
 ): Promise<Response> => {
-  const { employeeAlias, requirement, name, concise } = await req.json();
+  const { employeeAlias, requirement, name, concise, gpt4 } = await req.json();
 
   const session = (await getServerSession(authOptions)) as CustomSession;
   if (
@@ -69,6 +69,7 @@ export const POST = async (
     employeeAlias,
     name,
     concise,
+    gpt4,
   );
 
   return new Response(JSON.stringify(result), { status: 200 });
@@ -159,6 +160,7 @@ async function generateRequirementResponse(
   employeeAlias: string,
   name: string,
   concise: boolean,
+  gpt4: boolean,
 ): Promise<RequirementResponse> {
   const projectExperienceResponse = await findRelevantProjectForCompetencies(
     token,
@@ -197,7 +199,7 @@ async function generateRequirementResponse(
     2000,
     0.75,
   );
-  if (concise) {
+  if (concise || gpt4) {
     response = await requestOpenai(
       [
         {
@@ -208,7 +210,7 @@ async function generateRequirementResponse(
           `,
         },
       ],
-      "variant-rocks",
+      gpt4 ? "variant-rocks-gpt4" : "variant-rocks",
       2000,
       0,
     );

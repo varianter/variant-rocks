@@ -70,6 +70,7 @@ function _SalesGPT() {
   const [showCVSummary, setShowCVSummary] = useState(false);
   const [showRequirementsList, setShowRequirementsList] = useState(false);
   const [concise, setConcise] = useState(false);
+  const [gpt4, setGpt4] = useState(false);
 
   function handleSelectEmployee(newValue: EmployeeItem | undefined): void {
     setSelectedEmployee(newValue);
@@ -111,6 +112,7 @@ function _SalesGPT() {
   const fetchRequirements = async (
     employeeAlias: string,
     requirements: string[],
+    gpt4: boolean,
   ): Promise<RequirementResponse[]> => {
     const requirementPromises = requirements.map(async (requirement) => {
       const name = getFirstName(selectedEmployee?.name ?? "");
@@ -121,7 +123,13 @@ function _SalesGPT() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ employeeAlias, requirement, name, concise }),
+          body: JSON.stringify({
+            employeeAlias,
+            requirement,
+            name,
+            concise,
+            gpt4,
+          }),
         },
       );
       const data = await response.json();
@@ -141,7 +149,7 @@ function _SalesGPT() {
     requirements: string[],
     summaryText: string,
   ) => {
-    await fetchRequirements(employeeAlias, requirements)
+    await fetchRequirements(employeeAlias, requirements, false)
       .then(async (requirementResponses) => {
         setRequirementResponse(requirementResponses);
         const name = getFirstName(selectedEmployee?.name ?? "");
@@ -152,7 +160,12 @@ function _SalesGPT() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ requirementResponses, summaryText, name }),
+            body: JSON.stringify({
+              requirementResponses,
+              summaryText,
+              name,
+              gpt4,
+            }),
           },
         );
         const data = await response.json();
@@ -179,11 +192,10 @@ function _SalesGPT() {
     employeeAlias: string,
     requirements: string[],
   ) => {
-    await fetchRequirements(employeeAlias, requirements)
+    await fetchRequirements(employeeAlias, requirements, gpt4)
       .then((data) => {
         setRequirementResponse(data);
         setShowRequirementsList(true);
-
         setGeneratedText(null);
         setIsAnalysisLoading(false);
         setShowCVSummary(false);
@@ -308,6 +320,17 @@ function _SalesGPT() {
               id="concise-answer"
               checked={concise}
               onChange={(event) => setConcise(event.target.checked)}
+            />
+          </div>
+          <div className={styles["input-field"]}>
+            <label htmlFor="gpt-4">
+              {Locale.SalesGPT.EnableGpt4} {Locale.SalesGPT.EnableGpt4Warning}
+            </label>
+            <input
+              type="checkbox"
+              id="gp4"
+              checked={gpt4}
+              onChange={(event) => setGpt4(event.target.checked)}
             />
           </div>
           <div className={styles["analyse-button-container"]}>
