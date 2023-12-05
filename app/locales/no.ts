@@ -200,6 +200,7 @@ const no: PartialLocaleType = {
       MoreToCome: " (mer kommer!)",
     },
     ChooseEmployee: "Velg ansatt",
+    ConciseOption: "Svar kortfattet på krav",
     SelectPlaceholder: "Hvilken ansatt vil du hente CV-en til?",
     Requirements: "Krav til kompetanse",
     RequirementsPlaceholder:
