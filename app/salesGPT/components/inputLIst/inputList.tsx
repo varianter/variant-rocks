@@ -56,6 +56,7 @@ const InputList = ({ inputListValues, setInputListValues }: InputListProps) => {
         );
       })}
       <IconButton
+        role="button"
         className={styles["button-add"]}
         text={""}
         icon={<AddIcon />}

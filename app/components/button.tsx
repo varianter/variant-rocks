@@ -16,14 +16,7 @@ interface IconButtonProps {
   disabled?: boolean;
   tabIndex?: number;
   autoFocus?: boolean;
-  role?:
-    | "button"
-    | "submit"
-    | "link"
-    | "menuitem"
-    | "checkbox"
-    | "radio"
-    | "switch";
+  role?: "button" | "submit" | "reset" | undefined;
 }
 
 export function IconButton({
@@ -51,7 +44,7 @@ export function IconButton({
       onClick={onClick}
       title={title}
       disabled={disabled}
-      role={role}
+      type={role}
       tabIndex={tabIndex}
       autoFocus={autoFocus}
     >

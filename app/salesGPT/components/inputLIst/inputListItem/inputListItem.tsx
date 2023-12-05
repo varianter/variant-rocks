@@ -30,6 +30,7 @@ const ListInput = ({
       />
 
       <IconButton
+        role="button"
         className={styles["button-remove"]}
         icon={<CloseIcon />}
         onClick={() => deleteValue(InputListValue.value)}
