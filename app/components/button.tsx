@@ -4,7 +4,7 @@ import styles from "./button.module.scss";
 
 export type ButtonType = "primary" | "danger" | null;
 
-interface IconButtonProps {
+export function IconButton(props: {
   onClick?: () => void;
   icon?: JSX.Element;
   type?: ButtonType;
@@ -16,46 +16,36 @@ interface IconButtonProps {
   disabled?: boolean;
   tabIndex?: number;
   autoFocus?: boolean;
-}
-
-export function IconButton({
-  onClick,
-  icon,
-  type,
-  text,
-  bordered,
-  shadow,
-  className,
-  title,
-  disabled,
-  tabIndex,
-  autoFocus,
-}: IconButtonProps) {
+}) {
   return (
     <button
       className={
         styles["icon-button"] +
-        ` ${bordered && styles.border} ${shadow && styles.shadow} ${
-          className ?? ""
-        } clickable ${styles[type ?? ""]}`
+        ` ${props.bordered && styles.border} ${props.shadow && styles.shadow} ${
+          props.className ?? ""
+        } clickable ${styles[props.type ?? ""]}`
       }
-      onClick={onClick}
-      title={title}
-      disabled={disabled}
-      tabIndex={tabIndex}
-      autoFocus={autoFocus}
+      onClick={props.onClick}
+      title={props.title}
+      disabled={props.disabled}
+      role="button"
+      tabIndex={props.tabIndex}
+      autoFocus={props.autoFocus}
     >
-      {icon && (
+      {props.icon && (
         <div
           className={
-            styles["icon-button-icon"] + ` ${type === "primary" && "no-dark"}`
+            styles["icon-button-icon"] +
+            ` ${props.type === "primary" && "no-dark"}`
           }
         >
-          {icon}
+          {props.icon}
         </div>
       )}
 
-      {text && <div className={styles["icon-button-text"]}>{text}</div>}
+      {props.text && (
+        <div className={styles["icon-button-text"]}>{props.text}</div>
+      )}
     </button>
   );
 }
