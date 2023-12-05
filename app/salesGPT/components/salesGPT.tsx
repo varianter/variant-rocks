@@ -75,6 +75,7 @@ function _SalesGPT() {
 
   const [showCVSummary, setShowCVSummary] = useState(false);
   const [showRequirementsList, setShowRequirementsList] = useState(false);
+  const [concise, setConcise] = useState(false);
 
   const [inputListValues, setInputListValues] = useState<InputListValue[]>([
     { index: 0, value: "" },
@@ -122,6 +123,7 @@ function _SalesGPT() {
     requirements: string[],
   ): Promise<RequirementResponse[]> => {
     const requirementPromises = requirements.map(async (requirement) => {
+      const name = getFirstName(selectedEmployee?.name ?? "");
       const response = await fetch(
         "/api/chewbacca/generateRequirementResponse",
         {
@@ -129,7 +131,7 @@ function _SalesGPT() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ employeeAlias, requirement }),
+          body: JSON.stringify({ employeeAlias, requirement, name, concise }),
         },
       );
       const data = await response.json();
@@ -140,6 +142,10 @@ function _SalesGPT() {
     return requirementResponses;
   };
 
+  function getFirstName(name: string): string {
+    return name.split(" ")[0];
+  }
+
   const runSummaryAnalysis = async (
     employeeAlias: string,
     requirements: string[],
@@ -148,6 +154,7 @@ function _SalesGPT() {
     await fetchRequirements(employeeAlias, requirements)
       .then(async (requirementResponses) => {
         setRequirementResponse(requirementResponses);
+        const name = getFirstName(selectedEmployee?.name ?? "");
         const response = await fetch(
           "/api/chewbacca/generateSummaryOfQualifications",
           {
@@ -155,7 +162,7 @@ function _SalesGPT() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ requirementResponses, summaryText }),
+            body: JSON.stringify({ requirementResponses, summaryText, name }),
           },
         );
         const data = await response.json();
@@ -229,9 +236,9 @@ function _SalesGPT() {
     useChatStore.getState().currentSession().messages = [
       {
         role: "user",
-        content: `Bruk prosjektene til å lage et sammendrag av erfaringene til ${selectedEmployee?.name} ${projects
-          .map(projectExperienceToText)
-          .join("\n")}`,
+        content: `Bruk prosjektene til å lage et sammendrag av erfaringene til ${selectedEmployee?.name}
+        prosjektnavn,kundenavn,beskrivelse,rolle\n 
+        ${projects.map(projectExperienceToText).join("\n")}`,
         id: `${id++}`,
         date: new Date().toDateString(),
       },
