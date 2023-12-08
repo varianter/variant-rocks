@@ -75,7 +75,7 @@ function _SalesGPT() {
 
   const [showCVSummary, setShowCVSummary] = useState(false);
   const [showRequirementsList, setShowRequirementsList] = useState(false);
-  const [concise, setConcise] = useState(false);
+  const [concise, setConcise] = useState(true);
 
   const [inputListValues, setInputListValues] = useState<InputListValue[]>([
     { index: 0, value: "" },
@@ -315,6 +315,18 @@ function _SalesGPT() {
               />
             </div>
 
+            <div className={styles["checkox-input-field"]}>
+              <label htmlFor="concise-answer">
+                {Locale.SalesGPT.ConciseOption}
+              </label>
+              <input
+                type="checkbox"
+                id="concise-answer"
+                checked={concise}
+                onChange={(event) => setConcise(event.target.checked)}
+              />
+            </div>
+
             {/* TODO: Kanskje dele opp koden så vi har en getField som rendrer basert på selectedHelp. lettere hvis vi endrer på value */}
             {selectedHelp?.value !== "requirementlist" && (
               <div className={styles["input-field"]}>
@@ -328,6 +340,7 @@ function _SalesGPT() {
                 ></textarea>
               </div>
             )}
+
             <div className={styles["analyse-button-container"]}>
               <SalesGPTIconButton
                 key="analyse"

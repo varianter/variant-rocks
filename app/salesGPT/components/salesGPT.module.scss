@@ -51,6 +51,12 @@
   gap: 0.5rem;
 }
 
+.checkox-input-field{
+  display: flex;
+  flex-flow: row;
+  gap: 2rem
+}
+
 .text-input {
   min-height: 7rem;
   font-size: 1rem;
